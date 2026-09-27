@@ -1,13 +1,22 @@
 import Image from "next/image";
+import css from "./ProfileInfo.module.css";
 
 const ProfileInfo = ({ avatar, username, locationsCount }) => {
   return (
-    <div>
-      <Image src={avatar} alt={username} width={120} height={120} />
+    <div className={css.profile}>
+      <Image
+        className={css.avatar}
+        src={avatar}
+        alt={username}
+        width={145}
+        height={145}
+      />
 
-      <h1>{username}</h1>
+      <div className={css.avatarContent}>
+        <h1 className={css.username}>{username}</h1>
 
-      <p>Статей: {locationsCount}</p>
+        <p className={css.articlesCount}>Статей: {locationsCount}</p>
+      </div>
     </div>
   );
 };
