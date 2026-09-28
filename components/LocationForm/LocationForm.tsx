@@ -99,6 +99,9 @@ export default function LocationForm({
     >
       {(formik) => {
         const { errors, touched, values, isSubmitting, isValid, dirty } = formik;
+        // create: errors are revealed on submit, so only an untouched form is blocked
+        const isSubmitDisabled =
+          isSubmitting || !dirty || (mode === "edit" && !isValid);
         const hasError = (field: keyof FormValues) => Boolean(touched[field] && errors[field]);
         const fieldClass = (field: keyof FormValues, base: string) =>
           hasError(field) ? `${base} ${css.fieldError}` : base;
@@ -231,7 +234,7 @@ export default function LocationForm({
               <button
                 type="submit"
                 className={css.primaryButton}
-                disabled={isSubmitting || !isValid || !dirty}
+                disabled={isSubmitDisabled}
               >
                 {isSubmitting && <span className={css.spinner} aria-hidden="true" />}
                 {isSubmitting ? text.submitting : text.submit}
