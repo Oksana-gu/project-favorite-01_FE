@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import Header from "../components/Header/Header";
+import { Footer } from "@/components/Footer/Footer";
 
 export const metadata: Metadata = {
   title: "NoteHub",
@@ -45,6 +46,7 @@ export default function RootLayout({
           {children}
           {modal}
         </>
+        <Footer />
         {/* <Footer />
           </AuthProvider>
         </TanStackProvider> */}
