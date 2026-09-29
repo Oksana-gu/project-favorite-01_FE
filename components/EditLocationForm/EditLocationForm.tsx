@@ -6,7 +6,7 @@ import LocationForm, {
   type LocationFormValues,
 } from "@/components/LocationForm/LocationForm";
 import { updateLocation } from "@/lib/api/locations";
-import { getApiErrorMessage } from "@/lib/api/errors";
+import { getLocationErrorMessage } from "@/lib/api/errors";
 
 interface EditLocationFormProps {
   locationId: string;
@@ -27,9 +27,7 @@ export default function EditLocationForm({
       await updateLocation(locationId, formData);
       router.push(`/locations/${locationId}`);
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(error, "Не вдалося зберегти зміни. Спробуйте ще раз"),
-      );
+      toast.error(getLocationErrorMessage(error, "edit"));
     }
   };
 
