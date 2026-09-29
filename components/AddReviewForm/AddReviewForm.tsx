@@ -31,7 +31,7 @@ export const AddReviewForm: React.FC<AddReviewFormProps> = ({ onSubmit, onCancel
           await onSubmit(values);
           resetForm();
         } catch (error) {
-          console.error(error);
+          // console.error(error);
         } finally {
           setSubmitting(false);
         }
@@ -46,6 +46,7 @@ export const AddReviewForm: React.FC<AddReviewFormProps> = ({ onSubmit, onCancel
               name="description"
               placeholder="Напишіть ваш відгук"
               className={styles.reviewTextarea}
+              disabled={isSubmitting}
             />
             <ErrorMessage name="description" component="div" className={styles.validationError} />
           </div>
@@ -62,6 +63,7 @@ export const AddReviewForm: React.FC<AddReviewFormProps> = ({ onSubmit, onCancel
                     onClick={() => setFieldValue('rate', star)}
                     onMouseEnter={() => setHoverRate(star)}
                     onMouseLeave={() => setHoverRate(null)}
+                    disabled={isSubmitting}
                   >
                     {star <= currentRating ? (
                       <FaStar className={`${styles.starIcon} ${styles.starActive}`} />
