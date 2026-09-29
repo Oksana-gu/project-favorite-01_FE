@@ -38,6 +38,7 @@ export default async function EditLocationPage({
       <div className={css.container}>
         <h1 className={css.title}>Редагування місця</h1>
         <EditLocationForm
+          locationId={location._id}
           initialValues={initialValues}
           initialImageUrl={location.image}
         />
