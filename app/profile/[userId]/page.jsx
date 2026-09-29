@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo.jsx";
 import LocationsGrid from "@/components/LocationsGrid/LocationsGrid.jsx";
-import EmptyState from "@/components/EmptyState/EmptyState.jsx";
+import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder.jsx";
 
 import css from "./ProfilePage.module.css";
 
@@ -68,16 +68,15 @@ const ProfilePage = async ({ params }) => {
           />
         </div>
       </section>
+      <div className={css.locationsContainer}>
+        {!isOwnProfile && <h2 className={css.locationsTitle}>Локації</h2>}
 
-      {locations.length > 0 ? (
-        <>
-          {!isOwnProfile && <h2>Локації</h2>}
-
+        {locations.length > 0 ? (
           <LocationsGrid locations={locations} isOwnProfile={isOwnProfile} />
-        </>
-      ) : (
-        <EmptyState isOwnProfile={isOwnProfile} />
-      )}
+        ) : (
+          <ProfilePlaceholder isOwnProfile={isOwnProfile} />
+        )}
+      </div>
     </main>
   );
 };
