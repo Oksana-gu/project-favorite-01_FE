@@ -54,8 +54,10 @@ export default function LocationForm({
 }: LocationFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  // stays true after a successful save so the form is locked until navigation ends
-  const [isCompleted, setIsCompleted] = useState(false);
+  // Formik starts a new submit on every click, even before the button re-renders as disabled
+  const isSendingRef = useRef(false);
+  // "saved" keeps the form locked after a successful save until navigation ends
+  const [status, setStatus] = useState<"idle" | "sending" | "saved">("idle");
 
   useEffect(() => {
     return () => {
@@ -88,6 +90,10 @@ export default function LocationForm({
   };
 
   const handleSubmit = async (values: FormValues) => {
+    if (isSendingRef.current) return;
+    isSendingRef.current = true;
+    setStatus("sending");
+
     const formData = new FormData();
     formData.append("name", values.name.trim());
     formData.append("type", values.type);
@@ -95,8 +101,13 @@ export default function LocationForm({
     formData.append("description", values.description.trim());
     if (values.image) formData.append("image", values.image);
 
-    const isSaved = await onSubmit(formData);
-    if (isSaved) setIsCompleted(true);
+    let isSaved = false;
+    try {
+      isSaved = await onSubmit(formData);
+    } finally {
+      setStatus(isSaved ? "saved" : "idle");
+      if (!isSaved) isSendingRef.current = false;
+    }
   };
 
   return (
@@ -107,7 +118,7 @@ export default function LocationForm({
     >
       {(formik) => {
         const { errors, touched, values, isSubmitting, isValid, dirty } = formik;
-        const isBusy = isSubmitting || isCompleted;
+        const isBusy = isSubmitting || status !== "idle";
         // create: errors are revealed on submit, so only an untouched form is blocked
         const isSubmitDisabled =
           isBusy || !dirty || (mode === "edit" && !isValid);
