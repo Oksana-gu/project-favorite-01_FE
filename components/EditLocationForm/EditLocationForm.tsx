@@ -7,8 +7,9 @@ import LocationForm, {
 } from "@/components/LocationForm/LocationForm";
 import { updateLocation } from "@/lib/api/locations";
 import { getLocationErrorMessage } from "@/lib/api/errors";
+import type { LocationFormOptions } from "@/lib/api/serverCategories";
 
-interface EditLocationFormProps {
+interface EditLocationFormProps extends LocationFormOptions {
   locationId: string;
   initialValues: LocationFormValues;
   initialImageUrl: string;
@@ -18,6 +19,8 @@ export default function EditLocationForm({
   locationId,
   initialValues,
   initialImageUrl,
+  typeOptions,
+  regionOptions,
 }: EditLocationFormProps) {
   const router = useRouter();
 
@@ -36,6 +39,8 @@ export default function EditLocationForm({
       mode="edit"
       initialValues={initialValues}
       initialImageUrl={initialImageUrl}
+      typeOptions={typeOptions}
+      regionOptions={regionOptions}
       onSubmit={handleSubmit}
     />
   );

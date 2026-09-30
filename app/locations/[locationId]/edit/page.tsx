@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EditLocationForm from "@/components/EditLocationForm/EditLocationForm";
 import { getLocationByIdServer } from "@/lib/api/serverLocations";
+import { getLocationFormOptions } from "@/lib/api/serverCategories";
 import css from "@/app/locations/LocationFormPage.module.css";
 
 interface EditLocationPageProps {
@@ -23,7 +24,10 @@ export default async function EditLocationPage({
   params,
 }: EditLocationPageProps) {
   const { locationId } = await params;
-  const location = await getLocationByIdServer(locationId);
+  const [location, options] = await Promise.all([
+    getLocationByIdServer(locationId),
+    getLocationFormOptions(),
+  ]);
 
   const initialValues = {
     name: location.name,
@@ -41,6 +45,7 @@ export default async function EditLocationPage({
           locationId={location._id}
           initialValues={initialValues}
           initialImageUrl={location.image}
+          {...options}
         />
       </div>
     </main>

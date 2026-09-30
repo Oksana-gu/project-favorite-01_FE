@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Image from "next/image";
 import { ErrorMessage, Field, Form, Formik, type FormikProps } from "formik";
-import { LOCATION_TYPES, REGIONS } from "@/lib/constants/locationOptions";
+import type { SelectOption } from "@/lib/constants/locationOptions";
 import {
   ALLOWED_IMAGE_TYPES,
   getLocationValidationSchema,
@@ -26,6 +26,8 @@ interface LocationFormProps {
   mode: LocationFormMode;
   initialValues?: LocationFormValues;
   initialImageUrl?: string;
+  typeOptions: SelectOption[];
+  regionOptions: SelectOption[];
   onSubmit: (formData: FormData) => Promise<void>;
 }
 
@@ -45,6 +47,8 @@ export default function LocationForm({
   mode,
   initialValues = EMPTY_VALUES,
   initialImageUrl,
+  typeOptions,
+  regionOptions,
   onSubmit,
 }: LocationFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -182,7 +186,7 @@ export default function LocationForm({
                 <option value="" disabled>
                   Оберіть тип місця
                 </option>
-                {LOCATION_TYPES.map(({ value, label }) => (
+                {typeOptions.map(({ value, label }) => (
                   <option key={value} value={value}>
                     {label}
                   </option>
@@ -207,7 +211,7 @@ export default function LocationForm({
                 <option value="" disabled>
                   Оберіть регіон
                 </option>
-                {REGIONS.map(({ value, label }) => (
+                {regionOptions.map(({ value, label }) => (
                   <option key={value} value={value}>
                     {label}
                   </option>

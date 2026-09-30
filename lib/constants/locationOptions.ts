@@ -1,4 +1,4 @@
-// TODO: replace with data from /api/categories
+// fallback lists, used when /api/categories is unavailable
 export interface SelectOption {
   value: string;
   label: string;

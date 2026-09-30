@@ -5,8 +5,12 @@ import toast from "react-hot-toast";
 import LocationForm from "@/components/LocationForm/LocationForm";
 import { createLocation } from "@/lib/api/locations";
 import { getLocationErrorMessage } from "@/lib/api/errors";
+import type { LocationFormOptions } from "@/lib/api/serverCategories";
 
-export default function CreateLocationForm() {
+export default function CreateLocationForm({
+  typeOptions,
+  regionOptions,
+}: LocationFormOptions) {
   const router = useRouter();
 
   const handleSubmit = async (formData: FormData) => {
@@ -18,5 +22,12 @@ export default function CreateLocationForm() {
     }
   };
 
-  return <LocationForm mode="create" onSubmit={handleSubmit} />;
+  return (
+    <LocationForm
+      mode="create"
+      typeOptions={typeOptions}
+      regionOptions={regionOptions}
+      onSubmit={handleSubmit}
+    />
+  );
 }
