@@ -32,7 +32,7 @@ export default async function EditLocationPage({
   const initialValues = {
     name: location.name,
     // TODO: узгодити назву поля з бекендом (type чи locationType)
-    type: location.type,
+    type: location.type ?? location.locationType ?? "",
     region: location.region,
     description: location.description,
   };

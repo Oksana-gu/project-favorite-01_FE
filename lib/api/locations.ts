@@ -8,7 +8,9 @@ export interface LocationOwner {
 export interface Location {
   _id: string;
   name: string;
-  type: string;
+  // the backend field name is not settled yet, existing records use locationType
+  type?: string;
+  locationType?: string;
   region: string;
   description: string;
   image: string;
