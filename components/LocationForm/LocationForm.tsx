@@ -28,7 +28,8 @@ interface LocationFormProps {
   initialImageUrl?: string;
   typeOptions: SelectOption[];
   regionOptions: SelectOption[];
-  onSubmit: (formData: FormData) => Promise<void>;
+  // resolves to true when the data is saved and navigation has started
+  onSubmit: (formData: FormData) => Promise<boolean>;
 }
 
 const EMPTY_VALUES: LocationFormValues = {
@@ -53,6 +54,8 @@ export default function LocationForm({
 }: LocationFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // stays true after a successful save so the form is locked until navigation ends
+  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -92,7 +95,8 @@ export default function LocationForm({
     formData.append("description", values.description.trim());
     if (values.image) formData.append("image", values.image);
 
-    await onSubmit(formData);
+    const isSaved = await onSubmit(formData);
+    if (isSaved) setIsCompleted(true);
   };
 
   return (
@@ -103,9 +107,10 @@ export default function LocationForm({
     >
       {(formik) => {
         const { errors, touched, values, isSubmitting, isValid, dirty } = formik;
+        const isBusy = isSubmitting || isCompleted;
         // create: errors are revealed on submit, so only an untouched form is blocked
         const isSubmitDisabled =
-          isSubmitting || !dirty || (mode === "edit" && !isValid);
+          isBusy || !dirty || (mode === "edit" && !isValid);
         const hasError = (field: keyof FormValues) => Boolean(touched[field] && errors[field]);
         const fieldClass = (field: keyof FormValues, base: string) =>
           hasError(field) ? `${base} ${css.fieldError}` : base;
@@ -149,7 +154,7 @@ export default function LocationForm({
                 type="button"
                 className={css.uploadButton}
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isSubmitting}
+                disabled={isBusy}
               >
                 Завантажити фото
               </button>
@@ -240,14 +245,14 @@ export default function LocationForm({
                 className={css.primaryButton}
                 disabled={isSubmitDisabled}
               >
-                {isSubmitting && <span className={css.spinner} aria-hidden="true" />}
-                {isSubmitting ? text.submitting : text.submit}
+                {isBusy && <span className={css.spinner} aria-hidden="true" />}
+                {isBusy ? text.submitting : text.submit}
               </button>
               <button
                 type="button"
                 className={css.secondaryButton}
                 onClick={() => handleReset(formik)}
-                disabled={isSubmitting}
+                disabled={isBusy}
               >
                 {text.cancel}
               </button>

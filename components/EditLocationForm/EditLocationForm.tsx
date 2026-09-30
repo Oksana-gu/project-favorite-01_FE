@@ -29,8 +29,10 @@ export default function EditLocationForm({
     try {
       await updateLocation(locationId, formData);
       router.push(`/locations/${locationId}`);
+      return true;
     } catch (error) {
       toast.error(getLocationErrorMessage(error, "edit"));
+      return false;
     }
   };
 

@@ -17,8 +17,10 @@ export default function CreateLocationForm({
     try {
       const { _id } = await createLocation(formData);
       router.push(`/locations/${_id}`);
+      return true;
     } catch (error) {
       toast.error(getLocationErrorMessage(error, "create"));
+      return false;
     }
   };
 
