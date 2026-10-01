@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { api } from '@/src/lib/api';
 import styles from './LoginForm.module.css';
 
 const loginSchema = Yup.object().shape({
@@ -34,11 +35,7 @@ export default function LoginForm() {
         { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
     ) => {
         try {
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/login`,
-                values,
-                { withCredentials: true }
-            );
+            const response = await api.post('/auth/login', values);
 
             toast.success('Авторизація успішна!');
 
