@@ -10,5 +10,14 @@ interface LocationGridProps {
 
 export default function LocationGrid({ locations }: LocationGridProps) {
   const queryClient = useQueryClient();
-  return <LocationCard location={} />;
+  return (
+    <div>
+      {locations.map(location => (
+        <LocationCard location={location} key={location._id} />
+        //   <div key={location._id}>
+        //     <p>{location.name}</p>
+        //   </div>
+      ))}
+    </div>
+  );
 }

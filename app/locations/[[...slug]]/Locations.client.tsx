@@ -1,5 +1,6 @@
 'use client';
 
+import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
 import Pagination from '@/components/Locations/Pagination/Pagination';
 import { AppButton } from '@/components/Ui/Button/Button';
 import { getLocations } from '@/lib/locationsApi';
@@ -8,9 +9,9 @@ import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 interface LocationsClientProps {
-  region: string;
-  locationType: string;
-  sort: string;
+  region: string | undefined;
+  locationType: string | undefined;
+  sort: string | undefined;
 }
 
 export default function LocationsClient({
@@ -30,7 +31,6 @@ export default function LocationsClient({
     queryFn: () =>
       getLocations({
         page: currentPage,
-        limit: 6,
         search: search,
         region: region,
         locationType: locationType,
@@ -52,12 +52,11 @@ export default function LocationsClient({
   const handleSubmit = () => {};
 
   return (
-    <div className={css.app}>
+    <div>
       {isLoading && <p>Loading, please wait...</p>}
-      <div className={css.toolbar}>
-        <form onSubmit={handleSubmit} className={css.searchForm}>
+      <div>
+        <form onSubmit={handleSubmit}>
           <input
-            className={css.searchInput}
             autoComplete="off"
             type="text"
             name="query"
@@ -82,7 +81,7 @@ export default function LocationsClient({
           />
         )}
       </div>
-      {/* {isSuccess && data && <NoteList notes={data.notes} />} */}
+      {isSuccess && data && <LocationGrid locations={data.locations} />}
     </div>
   );
 }

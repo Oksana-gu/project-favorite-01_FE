@@ -31,7 +31,7 @@ export interface CreateLocationPayload {
 
 interface GetLocationsParams {
   page: number;
-  limit: number;
+  // limit: number;
   search?: string;
   region?: string;
   locationType?: string;
@@ -80,7 +80,7 @@ export const getRegions = async (): Promise<Region[]> => {
 
 export const getLocations = async ({
   page,
-  limit,
+  // limit,
   search,
   region,
   locationType,
@@ -88,7 +88,7 @@ export const getLocations = async ({
 }: GetLocationsParams): Promise<LocationsResponse> => {
   const params = {
     page,
-    limit,
+    // limit,
     ...(search && { search }),
     ...(region && { region }),
     ...(locationType && { locationType }),
