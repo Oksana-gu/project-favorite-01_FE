@@ -13,7 +13,7 @@ import css from "./LocationForm.module.css";
 
 export interface LocationFormValues {
   name: string;
-  type: string;
+  locationType: string;
   region: string;
   description: string;
 }
@@ -34,7 +34,7 @@ interface LocationFormProps {
 
 const EMPTY_VALUES: LocationFormValues = {
   name: "",
-  type: "",
+  locationType: "",
   region: "",
   description: "",
 };
@@ -96,7 +96,7 @@ export default function LocationForm({
 
     const formData = new FormData();
     formData.append("name", values.name.trim());
-    formData.append("type", values.type);
+    formData.append("locationType", values.locationType);
     formData.append("region", values.region);
     formData.append("description", values.description.trim());
     if (values.image) formData.append("image", values.image);
@@ -187,16 +187,18 @@ export default function LocationForm({
             </div>
 
             <div className={css.group}>
-              <label className={css.label} htmlFor="type">
+              <label className={css.label} htmlFor="locationType">
                 Тип місця
               </label>
               <Field
                 as="select"
-                id="type"
-                name="type"
+                id="locationType"
+                name="locationType"
                 className={fieldClass(
-                  "type",
-                  values.type ? css.select : `${css.select} ${css.selectEmpty}`,
+                  "locationType",
+                  values.locationType
+                    ? css.select
+                    : `${css.select} ${css.selectEmpty}`,
                 )}
               >
                 <option value="" disabled>
@@ -208,7 +210,7 @@ export default function LocationForm({
                   </option>
                 ))}
               </Field>
-              <ErrorMessage name="type" component="p" className={css.errorText} />
+              <ErrorMessage name="locationType" component="p" className={css.errorText} />
             </div>
 
             <div className={css.group}>

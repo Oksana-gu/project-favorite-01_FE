@@ -30,7 +30,7 @@ export const getLocationValidationSchema = (mode: LocationFormMode) =>
       .min(3, "Назва має містити щонайменше 3 символи")
       .max(96, "Назва має містити не більше 96 символів")
       .required("Введіть назву місця"),
-    type: Yup.string()
+    locationType: Yup.string()
       .trim()
       .max(64, "Тип має містити не більше 64 символів")
       .required("Оберіть тип місця"),
