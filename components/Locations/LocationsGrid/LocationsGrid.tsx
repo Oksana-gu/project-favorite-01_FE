@@ -1,6 +1,8 @@
 'use client';
 
+import css from './LocationGrid.module.css';
 import LocationCard from '@/components/Home/PopularLocationsBlock/LocationCard/LocationCard';
+import { AppButton } from '@/components/Ui/Button/Button';
 import { Location } from '@/types/profile';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -11,13 +13,17 @@ interface LocationGridProps {
 export default function LocationGrid({ locations }: LocationGridProps) {
   const queryClient = useQueryClient();
   return (
-    <div>
+    <div className={css.container}>
       {locations.map(location => (
         <LocationCard location={location} key={location._id} />
-        //   <div key={location._id}>
-        //     <p>{location.name}</p>
-        //   </div>
       ))}
+      <AppButton
+        className={css.searchButton}
+        type="button"
+        aria-label="Показати ще"
+      >
+        Показати ще
+      </AppButton>
     </div>
   );
 }
