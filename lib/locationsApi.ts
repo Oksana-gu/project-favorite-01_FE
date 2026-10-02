@@ -1,9 +1,9 @@
-import axios from "axios";
-import type { Location } from "@/types/profile";
-import type { LocationDetails } from "@/types/location";
+import axios from 'axios';
+import type { Location } from '@/types/profile';
+import type { LocationDetails } from '@/types/location';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://api.your-domain.com";
+  process.env.NEXT_PUBLIC_API_URL || 'https://api.your-domain.com';
 
 const publicApi = axios.create({
   baseURL: API_BASE_URL,
@@ -15,7 +15,7 @@ const privateApi = axios.create({
 });
 
 const normalizeLocationDescription = (description: string) =>
-  description.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+  description.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
 
 export interface CreateLocationPayload {
   name: string;
@@ -68,13 +68,13 @@ export interface Region {
 
 export const getLocationTypes = async (): Promise<LocationType[]> => {
   const { data } = await publicApi.get<LocationType[]>(
-    "/categories/location-types"
+    '/categories/location-types'
   );
   return data;
 };
 
 export const getRegions = async (): Promise<Region[]> => {
-  const { data } = await publicApi.get<Region[]>("/categories/regions");
+  const { data } = await publicApi.get<Region[]>('/categories/regions');
   return data;
 };
 
@@ -95,7 +95,7 @@ export const getLocations = async ({
     ...(sort && { sort }),
   };
 
-  const { data } = await publicApi.get<LocationsResponse>("/locations", {
+  const { data } = await publicApi.get<LocationsResponse>('/locations', {
     params,
   });
   return data;
@@ -117,23 +117,23 @@ export const createLocation = async ({
   coordinates,
 }: CreateLocationPayload): Promise<Location> => {
   const formData = new FormData();
-  formData.append("name", name.trim());
-  formData.append("locationType", locationType);
-  formData.append("region", region);
-  formData.append("description", normalizeLocationDescription(description));
-  formData.append("image", image);
+  formData.append('name', name.trim());
+  formData.append('locationType', locationType);
+  formData.append('region', region);
+  formData.append('description', normalizeLocationDescription(description));
+  formData.append('image', image);
 
   if (coordinates) {
-    formData.append("coordinates[lat]", coordinates.lat.toString());
-    formData.append("coordinates[lon]", coordinates.lon.toString());
+    formData.append('coordinates[lat]', coordinates.lat.toString());
+    formData.append('coordinates[lon]', coordinates.lon.toString());
   }
 
   try {
-    const { data } = await privateApi.post<Location>("/locations", formData);
+    const { data } = await privateApi.post<Location>('/locations', formData);
     return data;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Не вдалося створити локацію. Спробуйте ще раз.")
+      getErrorMessage(error, 'Не вдалося створити локацію. Спробуйте ще раз.')
     );
   }
 };
@@ -156,7 +156,7 @@ export const getLocationById = async (id: string): Promise<Location> => {
     return data;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Не вдалося завантажити дані локації.")
+      getErrorMessage(error, 'Не вдалося завантажити дані локації.')
     );
   }
 };
@@ -171,7 +171,7 @@ export const getLocationDetailsById = async (
     return data;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Не вдалося завантажити детальні дані локації.")
+      getErrorMessage(error, 'Не вдалося завантажити детальні дані локації.')
     );
   }
 };
@@ -188,17 +188,17 @@ export const updateLocation = async (
   }: UpdateLocationPayload
 ): Promise<Location> => {
   const formData = new FormData();
-  formData.append("name", name.trim());
-  formData.append("locationType", locationType);
-  formData.append("region", region);
-  formData.append("description", normalizeLocationDescription(description));
+  formData.append('name', name.trim());
+  formData.append('locationType', locationType);
+  formData.append('region', region);
+  formData.append('description', normalizeLocationDescription(description));
 
   if (image) {
-    formData.append("image", image);
+    formData.append('image', image);
   }
   if (coordinates) {
-    formData.append("coordinates[lat]", coordinates.lat.toString());
-    formData.append("coordinates[lon]", coordinates.lon.toString());
+    formData.append('coordinates[lat]', coordinates.lat.toString());
+    formData.append('coordinates[lon]', coordinates.lon.toString());
   }
 
   try {
@@ -209,7 +209,7 @@ export const updateLocation = async (
     return data;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Не вдалося оновити локацію. Спробуйте ще раз.")
+      getErrorMessage(error, 'Не вдалося оновити локацію. Спробуйте ще раз.')
     );
   }
 };
