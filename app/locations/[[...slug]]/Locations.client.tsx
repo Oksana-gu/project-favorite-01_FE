@@ -22,6 +22,8 @@ export default function LocationsClient({
   const [search, setSearch] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const handleSearch = useDebouncedCallback((search: string) => {
+    // console.log(search);
+
     setSearch(search);
     setCurrentPage(1);
   }, 1000);
@@ -57,13 +59,14 @@ export default function LocationsClient({
       <div>
         <form onSubmit={handleSubmit}>
           <input
+            // className={css.searchInput}
             autoComplete="off"
             type="text"
             name="query"
-            // value={query}
-            // onChange={e => setQuery(e.target.value)}
-            placeholder="Введіть назву, тип або регіон..."
-            aria-label="Введіть назву, тип або регіон"
+            value={search}
+            onChange={e => handleSearch(e.target.value)}
+            placeholder="Пошук"
+            aria-label="Пошук"
           />
           <AppButton
             // className={css.searchButton}

@@ -5,6 +5,7 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import LocationsClient from './Locations.client';
+import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
 
 interface LocationPageProps {
   params: Promise<{ slug?: string[] }>;
@@ -42,12 +43,13 @@ export default async function LocationPage({ params }: LocationPageProps) {
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <h1>Усі місця відпочинку</h1>;
-        <LocationsClient
+        <h1>Усі місця відпочинку</h1>
+        {/* <LocationsClient
           region={region}
           locationType={locationType}
           sort={sort}
-        ></LocationsClient>
+        ></LocationsClient> */}
+        <FilterPanel region={region} locationType={locationType} sort={sort} />
       </HydrationBoundary>
     </>
   );
