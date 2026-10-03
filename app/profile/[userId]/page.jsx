@@ -46,7 +46,7 @@ const ProfilePage = async ({ params }) => {
   }
 
   const locationsResponse = await fetch(
-    `http://localhost:3030/api/users/${userId}/locations?page=1&perPage=10`,
+    `http://localhost:3030/api/users/${userId}/locations?page=1&limit=10`,
   );
 
   if (!locationsResponse.ok) {
@@ -55,7 +55,7 @@ const ProfilePage = async ({ params }) => {
 
   const locationsData = await locationsResponse.json();
 
-  const locations = locationsData.locations;
+  const locations = locationsData.data ?? [];
 
   return (
     <main>
