@@ -6,8 +6,8 @@ const ProfileInfo = ({ avatar, username, locationsCount }) => {
     <div className={css.profile}>
       <Image
         className={css.avatar}
-        src={avatar}
-        alt={username}
+        src={avatar || "/images/default-avatar.png"}
+        alt={`Аватар користувача ${username}`}
         width={145}
         height={145}
       />
@@ -15,7 +15,7 @@ const ProfileInfo = ({ avatar, username, locationsCount }) => {
       <div className={css.avatarContent}>
         <h1 className={css.username}>{username}</h1>
 
-        <p className={css.articlesCount}>Статей: {locationsCount}</p>
+        <p className={css.articlesCount}>Статей: {locationsCount ?? 0}</p>
       </div>
     </div>
   );
