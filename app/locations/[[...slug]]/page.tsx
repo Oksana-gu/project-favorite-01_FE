@@ -5,8 +5,11 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import LocationsClient from './Locations.client';
+import css from './LocationPage.module.css';
 // import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
 // import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
+
+type LocationsPage = Awaited<ReturnType<typeof getLocations>>;
 
 interface LocationPageProps {
   params: Promise<{ slug?: string[] }>;
@@ -50,7 +53,7 @@ export default async function LocationPage({
           sort,
         }),
       initialPageParam: 1,
-      getNextPageParam: lastPage =>
+      getNextPageParam: (lastPage: LocationsPage) =>
         lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     })
     .catch(() => undefined);
@@ -63,16 +66,18 @@ export default async function LocationPage({
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <h1>Усі місця відпочинку</h1>
-        <LocationsClient
-          key={`${search ?? ''}|${region ?? ''}|${locationType ?? ''}|${sort ?? ''}`}
-          region={region}
-          locationType={locationType}
-          sort={sort}
-          search={search}
-        ></LocationsClient>
-        {/* <FilterPanel region={region} locationType={locationType} sort={sort} />
+        <div className={css.container}>
+          <h1 className={css.title}>Усі місця відпочинку</h1>
+          <LocationsClient
+            key={`${search ?? ''}|${region ?? ''}|${locationType ?? ''}|${sort ?? ''}`}
+            region={region}
+            locationType={locationType}
+            sort={sort}
+            search={search}
+          ></LocationsClient>
+          {/* <FilterPanel region={region} locationType={locationType} sort={sort} />
         <LocationGrid locations={data.locations} /> */}
+        </div>
       </HydrationBoundary>
     </>
   );

@@ -4,6 +4,7 @@ import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
 import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
 import { getLocations } from '@/lib/locationsApi';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import css from './Locations.client.module.css';
 
 interface LocationsClientProps {
   region: string | undefined;
@@ -43,7 +44,7 @@ export default function LocationsClient({
   const locations = data?.pages.flatMap(page => page.locations) ?? [];
 
   return (
-    <div>
+    <div className={css.content}>
       <FilterPanel region={region} locationType={locationType} sort={sort} />
       <LocationGrid
         locations={locations}

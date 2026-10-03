@@ -98,7 +98,7 @@ export default function FilterPanel({
 
   return (
     // <form onSubmit={handleSubmit}>
-    <>
+    <div className={css.panel}>
       <input
         className={css.searchInput}
         autoComplete="off"
@@ -112,24 +112,25 @@ export default function FilterPanel({
         placeholder="Пошук"
         aria-label="Пошук"
       />
-      <div>
-        <label htmlFor="locationType">Тип локації</label>
-        <select
-          id="locationType"
-          value={typeFromUrl}
-          onChange={event => handleTypeChange(event.target.value)}
-        >
-          <option value="">Усі типи</option>
-          {locationTypes.map(type => (
-            <option key={type._id} value={type.slug}>
-              {type.type}
-            </option>
-          ))}
-        </select>
-        {isLocationTypesPending && <p>Завантаження типів локацій...</p>}
-        {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
-      </div>
-      {/* Старий вибір кількох типів через checkbox:
+      <div className={css.filterRow}>
+        <div className={css.control}>
+          <label htmlFor="locationType">Тип локації</label>
+          <select
+            id="locationType"
+            value={typeFromUrl}
+            onChange={event => handleTypeChange(event.target.value)}
+          >
+            <option value="">Тип локації</option>
+            {locationTypes.map(type => (
+              <option key={type._id} value={type.slug}>
+                {type.type}
+              </option>
+            ))}
+          </select>
+          {isLocationTypesPending && <p>Завантаження типів локацій...</p>}
+          {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
+        </div>
+        {/* Старий вибір кількох типів через checkbox:
       <fieldset>
         <legend>Тип локації</legend>
         {locationTypes.map(type => (
@@ -145,39 +146,32 @@ export default function FilterPanel({
         ))}
       </fieldset>
       */}
-      <div
-      // className={styles.regionWrapper}
-      >
-        <label
-          htmlFor="region"
-          // className={styles.label}
-        >
-          Регіон
-        </label>
-        <select
-          id="region"
-          // defaultValue={region ?? ''}
-          value={searchParams.get('region') ?? region ?? ''}
-          onChange={event => handleRegionChange(event.target.value)}
-          // className={styles.select}
-        >
-          <option value="">Усі регіони</option>
-          {regions.map(region => (
-            <option key={region._id} value={region.slug}>
-              {region.region}
-            </option>
-          ))}
-        </select>
-        {isRegionsPending && <p>Завантаження регіонів...</p>}
-        {regionsError && <p>Не вдалося завантажити регіони.</p>}
+        <div className={css.control}>
+          <label htmlFor="region">Регіон</label>
+          <select
+            id="region"
+            value={searchParams.get('region') ?? region ?? ''}
+            onChange={event => handleRegionChange(event.target.value)}
+          >
+            <option value="">Регіон</option>
+            {regions.map(region => (
+              <option key={region._id} value={region.slug}>
+                {region.region}
+              </option>
+            ))}
+          </select>
+          {isRegionsPending && <p>Завантаження регіонів...</p>}
+          {regionsError && <p>Не вдалося завантажити регіони.</p>}
+        </div>
       </div>
-      <div>
+      <div className={`${css.control} ${css.sortControl}`}>
         <label htmlFor="sort">Сортування</label>
         <select
           id="sort"
           value={searchParams.get('sort') ?? sort ?? 'popular'}
           onChange={event => handleSortChange(event.target.value)}
         >
+          {/* <option value="popular">Сортування</option> */}
           <option value="popular">За популярністю</option>
           <option value="rating">За рейтингом</option>
           <option value="newest">Новіші спочатку</option>
@@ -191,6 +185,6 @@ export default function FilterPanel({
         Знайти місце
       </AppButton> */}
       {/* </form> */}
-    </>
+    </div>
   );
 }

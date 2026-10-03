@@ -51,12 +51,14 @@ export default function LocationGrid({
   }
 
   return (
-    <div className={css.container} ref={containerRef}>
-      {locations.map(location => (
-        <div key={location._id}>
-          <LocationCard location={location} />
-        </div>
-      ))}
+    <section className={css.container}>
+      <div className={css.cards} ref={containerRef}>
+        {locations.map(location => (
+          <div className={css.cardItem} key={location._id}>
+            <LocationCard location={location} />
+          </div>
+        ))}
+      </div>
       {isFetchingNextPage && <p role="status">Завантаження...</p>}
       {hasNextPage && (
         <AppButton
@@ -78,6 +80,6 @@ export default function LocationGrid({
         currentPage={currentPage}
         onPageChange={onPageChange}
       /> */}
-    </div>
+    </section>
   );
 }
