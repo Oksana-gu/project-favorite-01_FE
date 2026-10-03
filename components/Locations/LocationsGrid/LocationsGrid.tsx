@@ -57,9 +57,7 @@ export default function LocationGrid({
           <LocationCard location={location} />
         </div>
       ))}
-      {isFetchingNextPage && (
-        <p role="status">Завантаження наступної порції...</p>
-      )}
+      {isFetchingNextPage && <p role="status">Завантаження...</p>}
       {hasNextPage && (
         <AppButton
           className={css.searchButton}
@@ -74,13 +72,12 @@ export default function LocationGrid({
           {isFetchingNextPage ? 'Завантаження...' : 'Показати ще'}
         </AppButton>
       )}
-      {/* Старий варіант навігації сторінками:
-      <Pagination
+
+      {/* <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={onPageChange}
-      />
-      */}
+      /> */}
     </div>
   );
 }
