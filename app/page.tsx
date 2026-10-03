@@ -1,5 +1,22 @@
-import css from "@/app/page.module.css";
+import { Suspense } from "react";
+import HeroBlock from "@/components/Home/HeroBlock/HeroBlock";
+import AdvantagesBlock from "@/components/Home/AdvantagesBlock/AdvantagesBlock";
+import PopularSection from "@/components/Home/PopularLocationsBlock/PopularSection";
+import FeedbacksSection from "@/components/Home/ReviewsBlock/FeedbacksSection";
 
-export default function Home() {
-  return <main className={css.main}>Favorite-01-FE</main>;
+export default function HomePage() {
+  return (
+    <main>
+      <HeroBlock />
+      <AdvantagesBlock />
+
+      <Suspense fallback={<p>Завантаження популярних локацій...</p>}>
+        <PopularSection />
+      </Suspense>
+
+      <Suspense fallback={<p>Завантаження відгуків...</p>}>
+        <FeedbacksSection />
+      </Suspense>
+    </main>
+  );
 }
