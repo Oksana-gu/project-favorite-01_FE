@@ -5,17 +5,30 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import LocationsClient from './Locations.client';
-import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
+// import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
+// import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
 
 interface LocationPageProps {
   params: Promise<{ slug?: string[] }>;
+  searchParams: Promise<{
+    region?: string;
+    locationType?: string;
+    sort?: string;
+    search?: string;
+  }>;
 }
 
-export default async function LocationPage({ params }: LocationPageProps) {
+export default async function LocationPage({
+  params,
+  searchParams,
+}: LocationPageProps) {
   const { slug = [] } = await params;
-  const region = slug[0] && slug[0] !== 'all' ? slug[0] : undefined;
-  const locationType = slug[1] && slug[1] !== 'all' ? slug[1] : undefined;
-  const sort = slug[3] && slug[3] !== 'all' ? slug[3] : undefined;
+  const filters = await searchParams;
+  const region = filters.region ?? (slug[0] === 'all' ? undefined : slug[0]);
+  const locationType =
+    filters.locationType ?? (slug[1] === 'all' ? undefined : slug[1]);
+  const sort = filters.sort ?? (slug[3] === 'all' ? undefined : slug[3]);
+  const search = filters.search;
   //   const regionKey = slug[0] ?? 'all';
   //   const region = regionKey === 'all' ? undefined : regionKey;
   //   const locationTypeKey = slug[1] ?? 'all';
@@ -26,30 +39,40 @@ export default async function LocationPage({ params }: LocationPageProps) {
   const queryClient = new QueryClient();
 
   await queryClient
-    .query({
-      queryKey: ['location', undefined, region, locationType, sort, 1],
-      queryFn: () =>
+    .infiniteQuery({
+      queryKey: ['locations', search, region, locationType, sort],
+      queryFn: ({ pageParam }) =>
         getLocations({
-          page: 1,
-
-          search: undefined,
-          region: region,
-          locationType: locationType,
-          sort: sort,
+          page: pageParam,
+          search,
+          region,
+          locationType,
+          sort,
         }),
+      initialPageParam: 1,
+      getNextPageParam: lastPage =>
+        lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     })
     .catch(() => undefined);
+  // Previous regular query prefetch:
+  // await queryClient.query({
+  //   queryKey: ['location', search, region, locationType, sort, 1],
+  //   queryFn: () => getLocations({ page: 1, search, region, locationType, sort }),
+  // });
 
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <h1>Усі місця відпочинку</h1>
-        {/* <LocationsClient
+        <LocationsClient
+          key={`${search ?? ''}|${region ?? ''}|${locationType ?? ''}|${sort ?? ''}`}
           region={region}
           locationType={locationType}
           sort={sort}
-        ></LocationsClient> */}
-        <FilterPanel region={region} locationType={locationType} sort={sort} />
+          search={search}
+        ></LocationsClient>
+        {/* <FilterPanel region={region} locationType={locationType} sort={sort} />
+        <LocationGrid locations={data.locations} /> */}
       </HydrationBoundary>
     </>
   );

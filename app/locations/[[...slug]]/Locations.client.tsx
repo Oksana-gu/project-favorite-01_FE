@@ -1,90 +1,60 @@
 'use client';
 
+import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
 import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
-import Pagination from '@/components/Locations/Pagination/Pagination';
-import { AppButton } from '@/components/Ui/Button/Button';
 import { getLocations } from '@/lib/locationsApi';
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 interface LocationsClientProps {
   region: string | undefined;
   locationType: string | undefined;
   sort: string | undefined;
+  search: string | undefined;
 }
 
 export default function LocationsClient({
   region,
   locationType,
   sort,
+  search,
 }: LocationsClientProps) {
-  const [search, setSearch] = useState<string | undefined>(undefined);
-  const [currentPage, setCurrentPage] = useState(1);
-  const handleSearch = useDebouncedCallback((search: string) => {
-    // console.log(search);
-
-    setSearch(search);
-    setCurrentPage(1);
-  }, 1000);
-
-  const { data, isSuccess, isLoading } = useQuery({
-    queryKey: ['location', search, region, locationType, sort, currentPage],
-    queryFn: () =>
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage = false,
+    isFetchingNextPage,
+    isPending,
+  } = useInfiniteQuery({
+    queryKey: ['locations', search, region, locationType, sort],
+    queryFn: ({ pageParam }) =>
       getLocations({
-        page: currentPage,
-        search: search,
-        region: region,
-        locationType: locationType,
-        sort: sort,
+        page: pageParam,
+        search,
+        region,
+        locationType,
+        sort,
       }),
+    initialPageParam: 1,
+    getNextPageParam: lastPage =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     placeholderData: prev => prev,
   });
-  const totalPages = data?.totalPages ?? 0;
-
-  //   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault();
-  //     if (search.trim() === '') {
-  //       router.push('/locations');
-  //       return;
-  //     }
-  //     router.push('/locations?search=' + encodeURIComponent(query));
-  //   };
-
-  const handleSubmit = () => {};
+  const locations = data?.pages.flatMap(page => page.locations) ?? [];
 
   return (
     <div>
-      {isLoading && <p>Loading, please wait...</p>}
-      <div>
-        <form onSubmit={handleSubmit}>
-          <input
-            // className={css.searchInput}
-            autoComplete="off"
-            type="text"
-            name="query"
-            value={search}
-            onChange={e => handleSearch(e.target.value)}
-            placeholder="Пошук"
-            aria-label="Пошук"
-          />
-          <AppButton
-            // className={css.searchButton}
-            type="submit"
-            aria-label="Знайти місце"
-          >
-            Знайти місце
-          </AppButton>
-        </form>
-        {isSuccess && totalPages > 1 && (
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-        )}
-      </div>
-      {isSuccess && data && <LocationGrid locations={data.locations} />}
+      <FilterPanel region={region} locationType={locationType} sort={sort} />
+      <LocationGrid
+        locations={locations}
+        hasNextPage={hasNextPage}
+        isLoading={isPending}
+        isFetchingNextPage={isFetchingNextPage}
+        onLoadMore={() => {
+          void fetchNextPage();
+        }}
+        error={error}
+      />
     </div>
   );
 }

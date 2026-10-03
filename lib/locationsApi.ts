@@ -66,16 +66,31 @@ export interface Region {
   slug: string;
 }
 
+interface CategoriesResponse {
+  regions: Region[];
+  locationTypes: LocationType[];
+}
+
+// export const getLocationTypes = async (): Promise<LocationType[]> => {
+//   const { data } = await publicApi.get<LocationType[]>(
+//     '/categories/location-types'
+//   );
+//   return data;
+// };
+
 export const getLocationTypes = async (): Promise<LocationType[]> => {
-  const { data } = await publicApi.get<LocationType[]>(
-    '/categories/location-types'
-  );
-  return data;
+  const { data } = await publicApi.get<CategoriesResponse>('/categories');
+  return data.locationTypes;
 };
 
+// export const getRegions = async (): Promise<Region[]> => {
+//   const { data } = await publicApi.get<Region[]>('/categories/regions');
+//   return data;
+// };
+
 export const getRegions = async (): Promise<Region[]> => {
-  const { data } = await publicApi.get<Region[]>('/categories/regions');
-  return data;
+  const { data } = await publicApi.get<CategoriesResponse>('/categories');
+  return data.regions;
 };
 
 export const getLocations = async ({
