@@ -1,17 +1,19 @@
 import { cookies } from "next/headers";
-
+import { notFound } from "next/navigation";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo.jsx";
-import LocationsGrid from "@/components/LocationsGrid/LocationsGrid.jsx";
-import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder.jsx";
-
+import ProfileClient from "./ProfilePage.client.jsx";
 import css from "./ProfilePage.module.css";
 
 const ProfilePage = async ({ params }) => {
   const { userId } = await params;
 
   const profileResponse = await fetch(
-    `http://localhost:3030/api/users/${userId}`,
+    `https://project-favorite-01-be.onrender.com/api/users/${userId}`,
   );
+
+  if (profileResponse.status === 404) {
+    notFound();
+  }
 
   if (!profileResponse.ok) {
     throw new Error("Не вдалося отримати інформацію про користувача");
@@ -23,13 +25,12 @@ const ProfilePage = async ({ params }) => {
   let isOwnProfile = false;
 
   const cookieStore = await cookies();
-
   const accessToken = cookieStore.get("accessToken")?.value;
   const sessionId = cookieStore.get("sessionId")?.value;
 
   if (accessToken && sessionId) {
     const currentUserResponse = await fetch(
-      "http://localhost:3030/api/users/me",
+      "https://project-favorite-01-be.onrender.com/api/users/me",
       {
         headers: {
           Cookie: `accessToken=${accessToken}; sessionId=${sessionId}`,
@@ -45,18 +46,6 @@ const ProfilePage = async ({ params }) => {
     }
   }
 
-  const locationsResponse = await fetch(
-    `http://localhost:3030/api/users/${userId}/locations?page=1&limit=10`,
-  );
-
-  if (!locationsResponse.ok) {
-    throw new Error("Не вдалося отримати локації користувача");
-  }
-
-  const locationsData = await locationsResponse.json();
-
-  const locations = locationsData.data ?? [];
-
   return (
     <main>
       <section className={css.pageHeader}>
@@ -68,14 +57,11 @@ const ProfilePage = async ({ params }) => {
           />
         </div>
       </section>
+
       <div className={css.locationsContainer}>
         {!isOwnProfile && <h2 className={css.locationsTitle}>Локації</h2>}
 
-        {locations.length > 0 ? (
-          <LocationsGrid locations={locations} isOwnProfile={isOwnProfile} />
-        ) : (
-          <ProfilePlaceholder isOwnProfile={isOwnProfile} />
-        )}
+        <ProfileClient userId={userId} isOwnProfile={isOwnProfile} />
       </div>
     </main>
   );
