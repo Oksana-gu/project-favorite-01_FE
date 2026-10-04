@@ -6,6 +6,7 @@ import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 // import Header from "../components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "RelaxMap",
@@ -47,6 +48,7 @@ export default function RootLayout({
             <>
               {children}
               {modal}
+              <Toaster />
             </>
             {/* <Footer /> */}
           </AuthProvider>
