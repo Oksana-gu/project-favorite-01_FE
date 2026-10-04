@@ -1,60 +1,39 @@
 "use client";
 
 import { useState } from "react";
+
+import type { Feedback } from "@/app/locations/[locationId]/LocationDetailsPage";
+
 import css from "./ReviewsSection.module.css";
 
 interface ReviewsSectionProps {
   locationId: string;
+  reviews: Feedback[];
+  isLoading: boolean;
+  error: string | null;
 }
-
-interface Review {
-  id: string;
-  author: string;
-  rating: number;
-  text: string;
-}
-
-const mockReviews: Review[] = [
-  {
-    id: "1",
-    author: "Олена Коваль",
-    rating: 5,
-    text: "Неймовірні краєвиди та спокійна атмосфера — це одне з моїх найулюбленіших місць в Україні.",
-  },
-  {
-    id: "2",
-    author: "Ігор Петров",
-    rating: 5,
-    text: "Чудове місце для відпочинку на природі: чисте повітря, мальовничі пагорби та спокійна річка.",
-  },
-  {
-    id: "3",
-    author: "Ігор Шевченко",
-    rating: 5,
-    text: "Тут відчуваєш гармонію та справжню силу української природи — варто приїхати хоча б раз у житті.",
-  },
-  {
-    id: "4",
-    author: "Марія Бондар",
-    rating: 4,
-    text: "Дуже красиве та атмосферне місце. Особливо сподобалися краєвиди на Дністер.",
-  },
-];
 
 export default function ReviewsSection({
   locationId,
+  reviews,
+  isLoading,
+  error,
 }: ReviewsSectionProps) {
   const [startIndex, setStartIndex] = useState(0);
 
   const handlePrevious = () => {
+    if (reviews.length === 0) return;
+
     setStartIndex((prev) =>
-      prev === 0 ? mockReviews.length - 1 : prev - 1,
+      prev === 0 ? reviews.length - 1 : prev - 1,
     );
   };
 
   const handleNext = () => {
+    if (reviews.length === 0) return;
+
     setStartIndex((prev) =>
-      prev === mockReviews.length - 1 ? 0 : prev + 1,
+      prev === reviews.length - 1 ? 0 : prev + 1,
     );
   };
 
@@ -67,8 +46,8 @@ export default function ReviewsSection({
   };
 
   const orderedReviews = [
-    ...mockReviews.slice(startIndex),
-    ...mockReviews.slice(0, startIndex),
+    ...reviews.slice(startIndex),
+    ...reviews.slice(0, startIndex),
   ];
 
   return (
@@ -85,47 +64,66 @@ export default function ReviewsSection({
         </button>
       </div>
 
-      <div className={css.list}>
-        {orderedReviews.slice(0, 3).map((review) => (
-          <article className={css.card} key={review.id}>
-            <div
-              className={css.stars}
-              aria-label={`Оцінка ${review.rating} з 5`}
-            >
-              {"★".repeat(review.rating)}
-              {"☆".repeat(5 - review.rating)}
+      {isLoading && <p>Завантаження...</p>}
+
+      {error && <p>{error}</p>}
+
+      {!isLoading && !error && reviews.length === 0 && (
+        <p>Для цієї локації ще немає відгуків.</p>
+      )}
+
+      {!isLoading && !error && reviews.length > 0 && (
+        <>
+          <div className={css.list}>
+            {orderedReviews.slice(0, 3).map((review) => (
+              <article
+                className={css.card}
+                key={review._id}
+              >
+                <div
+                  className={css.stars}
+                  aria-label={`Оцінка ${review.rate} з 5`}
+                >
+                  {"★".repeat(review.rate)}
+                  {"☆".repeat(5 - review.rate)}
+                </div>
+
+                <p className={css.reviewText}>
+                  {review.description}
+                </p>
+
+                <p className={css.author}>
+                  {review.owner?.name ??
+                    review.userName ??
+                    "Анонімний користувач"}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          {reviews.length > 3 && (
+            <div className={css.navigation}>
+              <button
+                type="button"
+                className={css.arrow}
+                onClick={handlePrevious}
+                aria-label="Попередні відгуки"
+              >
+                ←
+              </button>
+
+              <button
+                type="button"
+                className={css.arrow}
+                onClick={handleNext}
+                aria-label="Наступні відгуки"
+              >
+                →
+              </button>
             </div>
-
-            <p className={css.reviewText}>
-              {review.text}
-            </p>
-
-            <p className={css.author}>
-              {review.author}
-            </p>
-          </article>
-        ))}
-      </div>
-
-      <div className={css.navigation}>
-        <button
-          type="button"
-          className={css.arrow}
-          onClick={handlePrevious}
-          aria-label="Попередні відгуки"
-        >
-          ←
-        </button>
-
-        <button
-          type="button"
-          className={css.arrow}
-          onClick={handleNext}
-          aria-label="Наступні відгуки"
-        >
-          →
-        </button>
-      </div>
+          )}
+        </>
+      )}
     </section>
   );
 }

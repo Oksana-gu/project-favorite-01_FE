@@ -7,12 +7,13 @@ interface LocationGalleryProps {
 }
 
 export default function LocationGallery({
+  image,
   name,
 }: LocationGalleryProps) {
   return (
     <div className={css.gallery}>
       <Image
-        src="/images/Content.jpg"
+        src={image}
         alt={name}
         fill
         priority

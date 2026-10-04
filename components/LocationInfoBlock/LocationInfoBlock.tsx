@@ -1,27 +1,39 @@
 import Link from "next/link";
 import type { LocationDetails } from "@/types/location";
+
 import css from "./LocationInfoBlock.module.css";
 
 interface LocationInfoBlockProps {
   location: LocationDetails;
+  rating: number;
 }
 
 export default function LocationInfoBlock({
   location,
+  rating,
 }: LocationInfoBlockProps) {
   const owner =
-    typeof location.ownerId === "object" && location.ownerId !== null
+    typeof location.ownerId === "object" &&
+    location.ownerId !== null
       ? location.ownerId
       : null;
+
+  const roundedRating = Math.round(rating);
 
   return (
     <div className={css.wrapper}>
       <div
         className={css.rating}
-        aria-label={`Рейтинг локації ${location.rate ?? 0} з 5`}
+        aria-label={`Рейтинг локації ${rating.toFixed(1)} з 5`}
       >
-        <span className={css.stars}>★★★★★</span>
-        <span className={css.ratingValue}>{location.rate ?? 0}</span>
+        <span className={css.stars}>
+          {"★".repeat(roundedRating)}
+          {"☆".repeat(5 - roundedRating)}
+        </span>
+
+        <span className={css.ratingValue}>
+          {rating.toFixed(1)}
+        </span>
       </div>
 
       <h1 className={css.title}>{location.name}</h1>
@@ -32,10 +44,10 @@ export default function LocationInfoBlock({
           {location.region}
         </p>
 
-       <p className={css.detail}>
-  <span className={css.label}>Тип локації:</span>{" "}
-  {location.locationTypeInfo?.type ?? location.locationType ?? "Не вказано"}
-</p>
+        <p className={css.detail}>
+          <span className={css.label}>Тип локації:</span>{" "}
+          {location.locationType || "Не вказано"}
+        </p>
 
         <p className={css.detail}>
           <span className={css.label}>Автор статті:</span>{" "}
