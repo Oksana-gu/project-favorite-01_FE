@@ -33,13 +33,15 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+export const metadata: Metadata = {
+  title: "RelaxMap",
+  description: "RelaxMap frontend application",
+};
+
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   return (
     <html lang="en">
       <body className={montserrat.variable}>
