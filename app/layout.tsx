@@ -33,11 +33,6 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "RelaxMap",
-  description: "RelaxMap frontend application",
-};
-
 export default function RootLayout({
   children,
   modal,
