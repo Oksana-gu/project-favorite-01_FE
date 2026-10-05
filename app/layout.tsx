@@ -1,55 +1,53 @@
 import type { Metadata } from "next";
-import "modern-normalize/modern-normalize.css";
 import "./globals.css";
-import { Montserrat } from "next/font/google";
-import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
-import AuthProvider from "@/components/AuthProvider/AuthProvider";
-// import Header from "../components/Header/Header";
-import { Footer } from "@/components/Footer/Footer";
-import { Toaster } from "react-hot-toast";
+import { Roboto } from "next/font/google";
+import Header from "../components/Header/Header";
 
 export const metadata: Metadata = {
-  title: "RelaxMap",
-  description: "App for finding new, beautiful places in Ukraine",
+  title: "NoteHub",
+  description: "App for creating your notes",
   openGraph: {
-    title: "RelaxMap",
-    description: "App for finding new, beautiful places in Ukraine",
-    url: "",
+    title: "NoteHub",
+    description: "App for creating your notes",
+    url: "https://08-zustand-rust-phi.vercel.app/",
     images: [
       {
-        url: "",
+        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
         width: 1200,
         height: 630,
-        alt: "RelaxMap application",
+        alt: "NoteHub application",
       },
     ],
   },
 };
 
-const montserrat = Montserrat({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-montserrat",
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-roboto",
   display: "swap",
 });
 
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className={montserrat.variable}>
-        <TanStackProvider>
-          <AuthProvider>
-            <>
-              {children}
-              {modal}
-              <Toaster />
-            </>
-            {/* <Footer /> */}
+      <body className={roboto.variable}>
+        {/* { <TanStackProvider>
+          <AuthProvider> */}
+        <Header />
+        <>
+          {children}
+          {modal}
+        </>
+        {/* <Footer />
           </AuthProvider>
-        </TanStackProvider>
+        </TanStackProvider> */}
       </body>
     </html>
   );
