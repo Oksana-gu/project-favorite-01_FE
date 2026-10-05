@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import css from './LocationGrid.module.css';
-import LocationCard from '@/components/Home/PopularLocationsBlock/LocationCard/LocationCard';
-import { Location } from '@/types/profile';
-import { AppButton } from '@/components/Ui/Button/Button';
-import { useEffect, useRef } from 'react';
+import css from "./LocationGrid.module.css";
+import LocationCard from "@/components/Home/PopularLocationsBlock/LocationCard/LocationCard";
+import { Location } from "@/types/profile";
+import { AppButton } from "@/components/Ui/Button/Button";
+import { useEffect, useRef } from "react";
 // import Pagination from '@/components/Locations/Pagination/Pagination';
 
 interface LocationGridProps {
@@ -14,6 +14,7 @@ interface LocationGridProps {
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
   error?: Error | null;
+  isOwnProfile?: boolean;
 }
 
 export default function LocationGrid({
@@ -23,6 +24,7 @@ export default function LocationGrid({
   isFetchingNextPage,
   onLoadMore,
   error,
+  isOwnProfile = false,
 }: LocationGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nextBatchStartIndex = useRef<number | null>(null);
@@ -31,8 +33,8 @@ export default function LocationGrid({
     const startIndex = nextBatchStartIndex.current;
     if (startIndex !== null && locations.length > startIndex) {
       containerRef.current?.children[startIndex]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+        behavior: "smooth",
+        block: "start",
       });
       nextBatchStartIndex.current = null;
     }
@@ -53,9 +55,9 @@ export default function LocationGrid({
   return (
     <section className={css.container}>
       <div className={css.cards} ref={containerRef}>
-        {locations.map(location => (
+        {locations.map((location) => (
           <div className={css.cardItem} key={location._id}>
-            <LocationCard location={location} />
+            <LocationCard location={location} isOwnProfile={isOwnProfile} />
           </div>
         ))}
       </div>
@@ -71,7 +73,7 @@ export default function LocationGrid({
             onLoadMore();
           }}
         >
-          {isFetchingNextPage ? 'Завантаження...' : 'Показати ще'}
+          {isFetchingNextPage ? "Завантаження..." : "Показати ще"}
         </AppButton>
       )}
 

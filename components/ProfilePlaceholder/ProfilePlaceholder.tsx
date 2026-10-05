@@ -1,7 +1,11 @@
 import Link from "next/link";
 import css from "./ProfilePlaceholder.module.css";
 
-const ProfilePlaceholder = ({ isOwnProfile }) => {
+interface ProfilePlaceholderProps {
+  isOwnProfile: boolean;
+}
+
+const ProfilePlaceholder = ({ isOwnProfile }: ProfilePlaceholderProps) => {
   return (
     <div className={css.profilePlaceholder}>
       {isOwnProfile ? (

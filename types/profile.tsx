@@ -32,3 +32,25 @@ export interface LocationsResponse {
   totalPages: number;
   locations: Location[];
 }
+
+export interface UserLocationsResponse {
+  data: Location[];
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface UserProfileResponse {
+  status: number;
+  message: string;
+  data: UserProfile;
+}
+
+export interface CurrentUserResponse {
+  status: number;
+  message: string;
+  data: {
+    id: string;
+  };
+}
