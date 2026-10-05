@@ -4,12 +4,12 @@ import ProfileInfo from "@/components/ProfileInfo/ProfileInfo.jsx";
 import ProfileClient from "./ProfilePage.client.jsx";
 import css from "./ProfilePage.module.css";
 
+const API_URL = process.env.BACKEND_API_URL;
+
 const ProfilePage = async ({ params }) => {
   const { userId } = await params;
 
-  const profileResponse = await fetch(
-    `https://project-favorite-01-be.onrender.com/api/users/${userId}`,
-  );
+  const profileResponse = await fetch(`${API_URL}/api/users/${userId}`);
 
   if (profileResponse.status === 404) {
     notFound();
@@ -29,14 +29,11 @@ const ProfilePage = async ({ params }) => {
   const sessionId = cookieStore.get("sessionId")?.value;
 
   if (accessToken && sessionId) {
-    const currentUserResponse = await fetch(
-      "https://project-favorite-01-be.onrender.com/api/users/me",
-      {
-        headers: {
-          Cookie: `accessToken=${accessToken}; sessionId=${sessionId}`,
-        },
+    const currentUserResponse = await fetch(`${API_URL}/api/users/me`, {
+      headers: {
+        Cookie: `accessToken=${accessToken}; sessionId=${sessionId}`,
       },
-    );
+    });
 
     if (currentUserResponse.ok) {
       const currentUserData = await currentUserResponse.json();

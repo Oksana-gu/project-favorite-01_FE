@@ -4,6 +4,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import LocationsGrid from "@/components/Locations/LocationsGrid/LocationsGrid";
 import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder.jsx";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const ProfileClient = ({ userId, isOwnProfile }) => {
   const {
     data,
@@ -17,7 +19,7 @@ const ProfileClient = ({ userId, isOwnProfile }) => {
 
     queryFn: async ({ pageParam }) => {
       const response = await fetch(
-        `https://project-favorite-01-be.onrender.com/api/users/${userId}/locations?page=${pageParam}&limit=10`,
+        `${API_URL}/api/users/${userId}/locations?page=${pageParam}&limit=10`,
       );
 
       if (!response.ok) {
