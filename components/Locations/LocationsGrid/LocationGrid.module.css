@@ -8,6 +8,10 @@
   min-width: 0;
 }
 
+.subtitle {
+  /* font-family: "Montserrat", sans-serif;
+  color: var(--color-neutral-dark); */
+}
 .cards {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

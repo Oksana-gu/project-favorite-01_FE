@@ -1,6 +1,6 @@
-import { cache } from 'react';
-import { getLocations } from '@/lib/locationsApi';
-import type { Location } from '@/types/profile';
+import { cache } from "react";
+import { getLocations } from "@/lib/locationsApi";
+import type { Location } from "@/types/profile";
 
 export const getAllLocations = cache(async (): Promise<Location[]> => {
   let page = 1;
@@ -11,7 +11,7 @@ export const getAllLocations = cache(async (): Promise<Location[]> => {
     do {
       const response = await getLocations({
         page,
-        // limit: 100,
+        limit: 100,
       });
 
       if (!response || !Array.isArray(response.locations)) {
@@ -25,7 +25,7 @@ export const getAllLocations = cache(async (): Promise<Location[]> => {
 
     return allLocations;
   } catch (error) {
-    console.error('Помилка завантаження всіх локацій:', error);
+    console.error("Помилка завантаження всіх локацій:", error);
     return allLocations;
   }
 });
