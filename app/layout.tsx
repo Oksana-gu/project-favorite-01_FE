@@ -1,53 +1,56 @@
 import type { Metadata } from "next";
+import "modern-normalize/modern-normalize.css";
 import "./globals.css";
-import { Roboto } from "next/font/google";
+import { Montserrat } from "next/font/google";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import Header from "../components/Header/Header";
+import { Footer } from "@/components/Footer/Footer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "NoteHub",
-  description: "App for creating your notes",
+  title: "RelaxMap",
+  description: "App for finding new, beautiful places in Ukraine",
   openGraph: {
-    title: "NoteHub",
-    description: "App for creating your notes",
-    url: "https://08-zustand-rust-phi.vercel.app/",
+    title: "RelaxMap",
+    description: "App for finding new, beautiful places in Ukraine",
+    url: "",
     images: [
       {
-        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        url: "",
         width: 1200,
         height: 630,
-        alt: "NoteHub application",
+        alt: "RelaxMap application",
       },
     ],
   },
 };
 
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-roboto",
+const montserrat = Montserrat({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={roboto.variable}>
-        {/* { <TanStackProvider>
-          <AuthProvider> */}
-        <Header />
-        <>
-          {children}
-          {modal}
-        </>
-        {/* <Footer />
+      <body className={montserrat.variable}>
+        <TanStackProvider>
+          <AuthProvider>
+            <Header />
+            <>
+              {children}
+              {modal}
+              <Toaster />
+            </>
+            <Footer />
           </AuthProvider>
-        </TanStackProvider> */}
+        </TanStackProvider>
       </body>
     </html>
   );
