@@ -23,9 +23,10 @@ export default function FilterPanel({
   const searchParams = useSearchParams();
   const typeFromUrl =
     searchParams.get("locationType")?.split(",")[0] ?? locationType ?? "";
-  // const selectedTypes = (searchParams.get("locationType") ?? locationType ?? "")
-  //   .split(",")
-  //   .filter(Boolean);
+
+  const selectedTypes = (searchParams.get("locationType") ?? locationType ?? "")
+    .split(",")
+    .filter(Boolean);
 
   const updateUrlFilter = (key: string, value: string) => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -71,12 +72,14 @@ export default function FilterPanel({
   const handleTypeChange = (value: string) => {
     updateUrlFilter("locationType", value);
   };
+
   // const handleMultipleTypesChange = (slug: string) => {
   //   const nextTypes = selectedTypes.includes(slug)
   //     ? selectedTypes.filter((selectedType) => selectedType !== slug)
   //     : [...selectedTypes, slug];
   //   updateUrlFilter("locationType", nextTypes.join(","));
   // };
+
   const handleSortChange = (value: string) => {
     updateUrlFilter("sort", value);
   };
@@ -118,25 +121,6 @@ export default function FilterPanel({
           </select>
           {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
         </div>
-
-        {/* <fieldset className={`${css.control} ${css.typeOptions}`}>
-          <legend>Тип локації</legend>
-          {isLocationTypesPending && (
-            <p role="status">Завантаження типів локацій...</p>
-          )}
-          {locationTypes.map((type) => (
-            <label className={css.typeOption} key={type._id}>
-              <input
-                type="checkbox"
-                value={type.slug}
-                checked={selectedTypes.includes(type.slug)}
-                onChange={() => handleMultipleTypesChange(type.slug)}
-              />
-              <span>{type.type}</span>
-            </label>
-          ))}
-          {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
-        </fieldset> */}
 
         <div className={css.control}>
           <label htmlFor="region">Регіон</label>

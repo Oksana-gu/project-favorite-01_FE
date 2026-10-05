@@ -9,12 +9,15 @@ import { Footer } from "@/components/Footer/Footer";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: "RelaxMap",
   description: "App for finding new, beautiful places in Ukraine",
   openGraph: {
     title: "RelaxMap",
     description: "App for finding new, beautiful places in Ukraine",
-    url: "",
+    // url: "",
     images: [
       {
         url: "",

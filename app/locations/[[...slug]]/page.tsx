@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import LocationsClient from "./Locations.client";
 import css from "./LocationPage.module.css";
+import { Metadata } from "next";
 
 type LocationsPage = Awaited<ReturnType<typeof getLocations>>;
 
@@ -17,6 +18,30 @@ interface LocationPageProps {
     sort?: string;
     search?: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: LocationPageProps): Promise<Metadata> {
+  const { slug = [] } = await params;
+  const pagePath = slug.length ? `/locations/${slug.join("/")}` : "/locations";
+  return {
+    title: `RelaxMap | ${slug.join(" ") || "Усі місця відпочинку"}`,
+    description: `RelaxMap | ${slug.join(" ") || "Усі місця відпочинку"}`,
+    openGraph: {
+      title: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      description: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      url: pagePath,
+      // images: [
+      //   {
+      //     url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+      //     width: 1200,
+      //     height: 630,
+      //     alt: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      //   },
+      // ],
+    },
+  };
 }
 
 export default async function LocationPage({

@@ -36,7 +36,8 @@
   font-weight: 600;
 }
 
-/* Стилі checkbox-групи для вмикання після підтримки множинного фільтра бекендом:
+/* Стилі checkbox-групи для вмикання після підтримки множинного фільтра бекендом: */
+/* 
 .typeOptions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -67,8 +68,7 @@
 .typeOption input {
   flex: 0 0 auto;
   accent-color: var(--color-coral-dark);
-}
-*/
+} */
 
 .control select,
 .searchInput {
