@@ -4,7 +4,7 @@ import "./globals.css";
 import { Montserrat } from "next/font/google";
 import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
-// import Header from "../components/Header/Header";
+import Header from "../components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
 import { Toaster } from "react-hot-toast";
 
@@ -45,12 +45,13 @@ export default function RootLayout({
       <body className={montserrat.variable}>
         <TanStackProvider>
           <AuthProvider>
+            <Header />
             <>
               {children}
               {modal}
               <Toaster />
             </>
-            {/* <Footer /> */}
+            <Footer />
           </AuthProvider>
         </TanStackProvider>
       </body>
