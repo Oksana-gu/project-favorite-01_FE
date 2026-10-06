@@ -1,13 +1,12 @@
-import { getLocations } from '@/lib/locationsApi';
+import { getLocations } from "@/lib/locationsApi";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
-} from '@tanstack/react-query';
-import LocationsClient from './Locations.client';
-import css from './LocationPage.module.css';
-// import FilterPanel from '@/components/Locations/FilterPanel/FilterPanel';
-// import LocationGrid from '@/components/Locations/LocationsGrid/LocationsGrid';
+} from "@tanstack/react-query";
+import LocationsClient from "./Locations.client";
+import css from "./LocationPage.module.css";
+import { Metadata } from "next";
 
 type LocationsPage = Awaited<ReturnType<typeof getLocations>>;
 
@@ -21,32 +20,51 @@ interface LocationPageProps {
   }>;
 }
 
+export async function generateMetadata({
+  params,
+}: LocationPageProps): Promise<Metadata> {
+  const { slug = [] } = await params;
+  const pagePath = slug.length ? `/locations/${slug.join("/")}` : "/locations";
+  return {
+    title: `RelaxMap | ${slug.join(" ") || "Усі місця відпочинку"}`,
+    description: `RelaxMap | ${slug.join(" ") || "Усі місця відпочинку"}`,
+    openGraph: {
+      title: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      description: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      url: pagePath,
+      // images: [
+      //   {
+      //     url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+      //     width: 1200,
+      //     height: 630,
+      //     alt: `${slug.join(" ") || "Усі місця відпочинку"} | RelaxMap`,
+      //   },
+      // ],
+    },
+  };
+}
+
 export default async function LocationPage({
   params,
   searchParams,
 }: LocationPageProps) {
   const { slug = [] } = await params;
   const filters = await searchParams;
-  const region = filters.region ?? (slug[0] === 'all' ? undefined : slug[0]);
+  const region = filters.region ?? (slug[0] === "all" ? undefined : slug[0]);
   const locationType =
-    filters.locationType ?? (slug[1] === 'all' ? undefined : slug[1]);
-  const sort = filters.sort ?? (slug[3] === 'all' ? undefined : slug[3]);
+    filters.locationType ?? (slug[1] === "all" ? undefined : slug[1]);
+  const sort = filters.sort ?? (slug[3] === "all" ? undefined : slug[3]);
   const search = filters.search;
-  //   const regionKey = slug[0] ?? 'all';
-  //   const region = regionKey === 'all' ? undefined : regionKey;
-  //   const locationTypeKey = slug[1] ?? 'all';
-  //   const locationType = locationTypeKey === 'all' ? undefined : locationTypeKey;
-  //   const sortKey = slug[3] ?? 'all';
-  //   const sort = sortKey === 'all' ? undefined : sortKey;
 
   const queryClient = new QueryClient();
 
   await queryClient
     .infiniteQuery({
-      queryKey: ['locations', search, region, locationType, sort],
+      queryKey: ["locations", search, region, locationType, sort, 6],
       queryFn: ({ pageParam }) =>
         getLocations({
           page: pageParam,
+          limit: 6,
           search,
           region,
           locationType,
@@ -57,11 +75,6 @@ export default async function LocationPage({
         lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     })
     .catch(() => undefined);
-  // Previous regular query prefetch:
-  // await queryClient.query({
-  //   queryKey: ['location', search, region, locationType, sort, 1],
-  //   queryFn: () => getLocations({ page: 1, search, region, locationType, sort }),
-  // });
 
   return (
     <>
@@ -69,14 +82,12 @@ export default async function LocationPage({
         <div className={css.container}>
           <h1 className={css.title}>Усі місця відпочинку</h1>
           <LocationsClient
-            key={`${search ?? ''}|${region ?? ''}|${locationType ?? ''}|${sort ?? ''}`}
+            key={`${search ?? ""}|${region ?? ""}|${locationType ?? ""}|${sort ?? ""}`}
             region={region}
             locationType={locationType}
             sort={sort}
             search={search}
           ></LocationsClient>
-          {/* <FilterPanel region={region} locationType={locationType} sort={sort} />
-        <LocationGrid locations={data.locations} /> */}
         </div>
       </HydrationBoundary>
     </>

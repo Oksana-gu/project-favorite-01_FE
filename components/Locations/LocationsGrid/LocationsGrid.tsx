@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import css from './LocationGrid.module.css';
-import LocationCard from '@/components/Home/PopularLocationsBlock/LocationCard/LocationCard';
-import { Location } from '@/types/profile';
-import { AppButton } from '@/components/Ui/Button/Button';
-import { useEffect, useRef } from 'react';
+import css from "./LocationGrid.module.css";
+import LocationCard from "@/components/Home/PopularLocationsBlock/LocationCard/LocationCard";
+import { Location } from "@/types/profile";
+import { AppButton } from "@/components/Ui/Button/Button";
+import { useEffect, useRef } from "react";
+import { Oval } from "react-loader-spinner";
 // import Pagination from '@/components/Locations/Pagination/Pagination';
 
 interface LocationGridProps {
@@ -31,15 +32,28 @@ export default function LocationGrid({
     const startIndex = nextBatchStartIndex.current;
     if (startIndex !== null && locations.length > startIndex) {
       containerRef.current?.children[startIndex]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+        behavior: "smooth",
+        block: "start",
       });
       nextBatchStartIndex.current = null;
     }
   }, [locations.length]);
 
   if (isLoading) {
-    return <p role="status">Завантаження локацій...</p>;
+    return (
+      <div className={css.loader}>
+        <Oval
+          visible={true}
+          height="80"
+          width="80"
+          color="#CD5B45"
+          secondaryColor="#FAD7A0"
+          ariaLabel="oval-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
   }
 
   if (error) {
@@ -53,13 +67,26 @@ export default function LocationGrid({
   return (
     <section className={css.container}>
       <div className={css.cards} ref={containerRef}>
-        {locations.map(location => (
+        {locations.map((location) => (
           <div className={css.cardItem} key={location._id}>
             <LocationCard location={location} />
           </div>
         ))}
       </div>
-      {isFetchingNextPage && <p role="status">Завантаження...</p>}
+      {isFetchingNextPage && (
+        <div className={css.loader}>
+          <Oval
+            visible={true}
+            height="80"
+            width="80"
+            color="#CD5B45"
+            secondaryColor="#FAD7A0"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
       {hasNextPage && (
         <AppButton
           className={css.searchButton}
@@ -71,15 +98,9 @@ export default function LocationGrid({
             onLoadMore();
           }}
         >
-          {isFetchingNextPage ? 'Завантаження...' : 'Показати ще'}
+          {isFetchingNextPage ? "Завантаження..." : "Показати ще"}
         </AppButton>
       )}
-
-      {/* <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-      /> */}
     </section>
   );
 }
