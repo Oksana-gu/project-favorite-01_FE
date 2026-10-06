@@ -42,10 +42,14 @@ interface FeedbacksResponse {
 
 interface LocationDetailsPageProps {
   location: ApiLocationDetails;
+  regionName: string;
+  locationTypeName: string;
 }
 
 export default function LocationDetailsPage({
   location,
+  regionName,
+  locationTypeName,
 }: LocationDetailsPageProps) {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,6 +110,8 @@ export default function LocationDetailsPage({
             <LocationInfoBlock
               location={normalizedLocation}
               rating={averageRating}
+              regionName={regionName}
+              locationTypeName={locationTypeName}
             />
           </div>
 

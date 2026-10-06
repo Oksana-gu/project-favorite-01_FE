@@ -11,7 +11,6 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
   return proxyToBackend(`/api/locations/${encodeURIComponent(locationId)}`);
 }
 
-// TODO: перевірити після мерджа PATCH /api/locations/:id на бекенді
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const { locationId } = await params;
   let formData: FormData;

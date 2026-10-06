@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import LocationDetailsPage from "./LocationDetailsPage";
-import { getLocationById } from "@/lib/locationsApi";
+import { getLocationById, getRegions, getLocationTypes } from "@/lib/locationsApi";
 
 interface LocationPageProps {
   params: Promise<{
@@ -54,5 +54,31 @@ export default async function LocationPage({
     notFound();
   }
 
-  return <LocationDetailsPage location={location} />;
+  const [regions, locationTypes] = await Promise.all([
+    getRegions(),
+    getLocationTypes(),
+  ]);
+
+  const region = regions.find(
+    (item) => item.slug === location.region
+  );
+
+  const locationType = locationTypes.find(
+    (item) => item.slug === location.locationType
+  );
+
+  return (
+    <LocationDetailsPage
+      location={location}
+      regionName={
+        region?.region ??
+        region?.name ??
+        location.region
+      }
+      locationTypeName={
+        locationType?.type ??
+        location.locationType
+      }
+    />
+  );
 }
