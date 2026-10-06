@@ -40,6 +40,10 @@
   color: var(--color-scheme-2-text);
 }
 
+.avatarPlaceholder {
+  background-color: #e0e0e0;
+}
+
 @media screen and (min-width: 768px) {
   .profile {
     flex-direction: row;

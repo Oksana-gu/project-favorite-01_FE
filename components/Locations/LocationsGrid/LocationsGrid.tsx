@@ -15,6 +15,7 @@ interface LocationGridProps {
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
   error?: Error | null;
+  isOwnProfile?: boolean;
 }
 
 export default function LocationGrid({
@@ -24,6 +25,7 @@ export default function LocationGrid({
   isFetchingNextPage,
   onLoadMore,
   error,
+  isOwnProfile = false,
 }: LocationGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nextBatchStartIndex = useRef<number | null>(null);
@@ -69,7 +71,7 @@ export default function LocationGrid({
       <div className={css.cards} ref={containerRef}>
         {locations.map((location) => (
           <div className={css.cardItem} key={location._id}>
-            <LocationCard location={location} />
+            <LocationCard location={location} isOwnProfile={isOwnProfile} />
           </div>
         ))}
       </div>

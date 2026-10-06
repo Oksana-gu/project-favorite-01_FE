@@ -2,9 +2,15 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import LocationsGrid from "@/components/Locations/LocationsGrid/LocationsGrid";
-import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder.jsx";
+import ProfilePlaceholder from "@/components/ProfilePlaceholder/ProfilePlaceholder";
+import { getUserLocations } from "@/lib/profileApi";
 
-const ProfileClient = ({ userId, isOwnProfile }) => {
+interface ProfileClientProps {
+  userId: string;
+  isOwnProfile: boolean;
+}
+
+const ProfileClient = ({ userId, isOwnProfile }: ProfileClientProps) => {
   const {
     data,
     error,
@@ -15,17 +21,12 @@ const ProfileClient = ({ userId, isOwnProfile }) => {
   } = useInfiniteQuery({
     queryKey: ["profileLocations", userId],
 
-    queryFn: async ({ pageParam }) => {
-      const response = await fetch(
-        `https://project-favorite-01-be.onrender.com/api/users/${userId}/locations?page=${pageParam}&limit=10`,
-      );
-
-      if (!response.ok) {
-        throw new Error("Не вдалося завантажити локації");
-      }
-
-      return response.json();
-    },
+    queryFn: ({ pageParam }) =>
+      getUserLocations({
+        userId,
+        page: pageParam,
+        limit: 6,
+      }),
 
     initialPageParam: 1,
 
