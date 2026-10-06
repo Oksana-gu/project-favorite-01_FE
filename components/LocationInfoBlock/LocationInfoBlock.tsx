@@ -6,11 +6,15 @@ import css from "./LocationInfoBlock.module.css";
 interface LocationInfoBlockProps {
   location: LocationDetails;
   rating: number;
+  regionName: string;
+  locationTypeName: string;
 }
 
 export default function LocationInfoBlock({
   location,
   rating,
+  regionName,
+  locationTypeName,
 }: LocationInfoBlockProps) {
   const owner =
     typeof location.ownerId === "object" &&
@@ -41,12 +45,12 @@ export default function LocationInfoBlock({
       <div className={css.details}>
         <p className={css.detail}>
           <span className={css.label}>Регіон:</span>{" "}
-          {location.region}
+          {regionName}
         </p>
 
         <p className={css.detail}>
           <span className={css.label}>Тип локації:</span>{" "}
-          {location.locationType || "Не вказано"}
+          {locationTypeName}
         </p>
 
         <p className={css.detail}>

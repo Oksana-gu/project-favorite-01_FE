@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 import type { Feedback } from "@/app/locations/[locationId]/LocationDetailsPage";
-
+import { useAuthStore } from "@/lib/store/authStore";
+import { useAuthModalStore } from "@/src/store/useAuthModalStore";
+import { AppButton } from "@/components/Ui/Button/Button";
+import { Icon } from "@/components/Ui/Icon/Icon";
 import css from "./ReviewsSection.module.css";
+
 
 interface ReviewsSectionProps {
   locationId: string;
@@ -20,6 +24,23 @@ export default function ReviewsSection({
   error,
 }: ReviewsSectionProps) {
   const [startIndex, setStartIndex] = useState(0);
+  const router = useRouter();
+  const isAuthenticated = useAuthStore(
+    (state) => state.isAuthenticated,
+  );
+
+  const openAuthModal = useAuthModalStore(
+    (state) => state.openModal,
+  );
+
+  const handleAddReview = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    router.push(`/locations/${locationId}/review`);
+  };
 
   const handlePrevious = () => {
     if (reviews.length === 0) return;
@@ -37,19 +58,10 @@ export default function ReviewsSection({
     );
   };
 
-  const handleAddReview = () => {
-    // TODO:
-    // неавторизований -> AuthPromptModal
-    // авторизований -> AddReviewModal
-
-    console.log("Add review:", locationId);
-  };
-
   const orderedReviews = [
     ...reviews.slice(startIndex),
     ...reviews.slice(0, startIndex),
   ];
-
   return (
     <section className={css.section}>
       <div className={css.header}>
@@ -103,24 +115,24 @@ export default function ReviewsSection({
 
           {reviews.length > 3 && (
             <div className={css.navigation}>
-              <button
-                type="button"
-                className={css.arrow}
-                onClick={handlePrevious}
-                aria-label="Попередні відгуки"
-              >
-                ←
-              </button>
+  <AppButton
+    className={css.btnPrev}
+    variant="secondary"
+    ariaLabel="Previous"
+    onClick={handlePrevious}
+  >
+    <Icon className={css.iconPrev} name="arrow_back" />
+  </AppButton>
 
-              <button
-                type="button"
-                className={css.arrow}
-                onClick={handleNext}
-                aria-label="Наступні відгуки"
-              >
-                →
-              </button>
-            </div>
+  <AppButton
+    className={css.btnNext}
+    variant="secondary"
+    ariaLabel="Next"
+    onClick={handleNext}
+  >
+    <Icon className={css.iconNext} name="arrow_forward" />
+  </AppButton>
+</div>
           )}
         </>
       )}
