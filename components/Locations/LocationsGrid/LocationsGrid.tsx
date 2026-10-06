@@ -5,6 +5,7 @@ import LocationCard from "@/components/Home/PopularLocationsBlock/LocationCard/L
 import { Location } from "@/types/profile";
 import { AppButton } from "@/components/Ui/Button/Button";
 import { useEffect, useRef } from "react";
+import { Oval } from "react-loader-spinner";
 // import Pagination from '@/components/Locations/Pagination/Pagination';
 
 interface LocationGridProps {
@@ -41,7 +42,20 @@ export default function LocationGrid({
   }, [locations.length]);
 
   if (isLoading) {
-    return <p role="status">Завантаження локацій...</p>;
+    return (
+      <div className={css.loader}>
+        <Oval
+          visible={true}
+          height="80"
+          width="80"
+          color="#CD5B45"
+          secondaryColor="#FAD7A0"
+          ariaLabel="oval-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
   }
 
   if (error) {
@@ -61,7 +75,20 @@ export default function LocationGrid({
           </div>
         ))}
       </div>
-      {isFetchingNextPage && <p role="status">Завантаження...</p>}
+      {isFetchingNextPage && (
+        <div className={css.loader}>
+          <Oval
+            visible={true}
+            height="80"
+            width="80"
+            color="#CD5B45"
+            secondaryColor="#FAD7A0"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
       {hasNextPage && (
         <AppButton
           className={css.searchButton}
@@ -76,12 +103,6 @@ export default function LocationGrid({
           {isFetchingNextPage ? "Завантаження..." : "Показати ще"}
         </AppButton>
       )}
-
-      {/* <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-      /> */}
     </section>
   );
 }
