@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { register } from "@/lib/api/clientApi";
-import { useAuthStore } from "@/lib/store/authStore";
+import { useAuthStore } from "@/store";
 import css from "./RegistrationForm.module.css";
 
 export interface RegistrationFormValues {
@@ -76,7 +76,19 @@ export default function RegistrationForm() {
         password: values.password,
       });
 
-      setUser(user);
+      const idValue =
+        "id" in user
+          ? typeof user.id === "string"
+            ? user.id
+            : user._id
+          : user._id;
+      const authUser = {
+        ...user,
+        id: idValue,
+        _id: user._id ?? idValue,
+      };
+
+      setUser(authUser);
       router.push("/profile");
     } catch (error) {
       const message = isAxiosError(error)
@@ -109,7 +121,9 @@ export default function RegistrationForm() {
                   type={type}
                   placeholder={placeholder}
                   autoComplete={autoComplete}
-                  className={hasError ? `${css.input} ${css.inputError}` : css.input}
+                  className={
+                    hasError ? `${css.input} ${css.inputError}` : css.input
+                  }
                 />
                 <ErrorMessage name={name} component="p" className={css.error} />
               </div>

@@ -6,6 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { api } from "@/src/lib/api";
+import { useAuthStore } from "@/store";
 import styles from "./LoginForm.module.css";
 
 const loginSchema = Yup.object().shape({
@@ -24,6 +25,7 @@ interface FormValues {
 
 export default function LoginForm() {
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
 
   const initialValues: FormValues = {
     email: "",
@@ -36,11 +38,21 @@ export default function LoginForm() {
   ) => {
     try {
       const response = await api.post("/auth/login", values);
-      console.log("res" + response);
+      const user = response.data?.user ?? response.data ?? null;
+
+      if (user) {
+        setUser({
+          ...user,
+          id: user.id ?? user._id,
+          _id: user._id ?? user.id,
+          name: user.name ?? "",
+          email: user.email ?? "",
+        });
+      }
 
       toast.success("Авторизація успішна!");
 
-      const userId = response.data?.user?.id || response.data?.id;
+      const userId = user?.id ?? user?._id;
       if (userId) {
         router.push(`/profile/${userId}`);
       } else {
