@@ -1,36 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { parseSetCookie } from "cookie";
 import { isAxiosError } from "axios";
 import { api } from "../../api";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
     const apiRes = await api.post("/auth/register", body);
 
-    const cookieStore = await cookies();
-    const setCookie = apiRes.headers["set-cookie"];
+    const response = NextResponse.json(apiRes.data, { status: apiRes.status });
 
-    if (setCookie) {
-      const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
-
-            for (const cookieStr of cookieArray) {
-        const parsed = parseSetCookie(cookieStr);
-
-        cookieStore.set(parsed.name, parsed.value ?? "", {
-          expires: parsed.expires,
-          path: parsed.path,
-          maxAge: parsed.maxAge,
-          httpOnly: parsed.httpOnly,
-          secure: parsed.secure,
-          sameSite: parsed.sameSite,
+    const setCookieHeader = apiRes.headers["set-cookie"];
+    if (setCookieHeader) {
+      if (Array.isArray(setCookieHeader)) {
+        setCookieHeader.forEach((cookieStr) => {
+          response.headers.append("Set-Cookie", cookieStr);
         });
+      } else {
+        response.headers.set("Set-Cookie", setCookieHeader);
       }
     }
 
-    return NextResponse.json(apiRes.data, { status: apiRes.status });
-  } catch (error) {
+    return response;
+  } catch (error: unknown) {
     if (isAxiosError(error)) {
       return NextResponse.json(
         {
@@ -38,13 +30,13 @@ export async function POST(req: NextRequest) {
             error.response?.data?.message ??
             "Не вдалося зареєструватися. Спробуйте ще раз",
         },
-        { status: error.response?.status ?? 500 },
+        { status: error.response?.status ?? 500 }
       );
     }
 
     return NextResponse.json(
       { message: "Помилка сервера. Спробуйте пізніше" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

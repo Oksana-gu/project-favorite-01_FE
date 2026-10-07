@@ -3,9 +3,9 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { api } from "@/src/lib/api";
+import { useAuthStore } from "@/store";
 import styles from "./LoginForm.module.css";
 
 const loginSchema = Yup.object().shape({
@@ -22,6 +22,23 @@ interface FormValues {
   password: string;
 }
 
+interface UserPayload {
+  id?: string;
+  _id?: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+}
+
+interface LoginResponseData {
+  data?: {
+    user?: UserPayload;
+    id?: string;
+    _id?: string;
+  };
+  user?: UserPayload;
+  id?: string;
+  _id?: string;
 interface LoginResponseUser {
   id?: string;
   _id?: string;
@@ -36,7 +53,9 @@ interface LoginResponse extends LoginResponseData {
 }
 
 export default function LoginForm() {
-  const router = useRouter();
+  const setUser = useAuthStore((state) => 
+    'setUser' in state && typeof state.setUser === 'function' ? state.setUser : undefined
+  );
 
   const initialValues: FormValues = {
     email: "",
@@ -45,8 +64,8 @@ export default function LoginForm() {
 
   const handleSubmit = async (
     values: FormValues,
-    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
-  ) => {
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+  ): Promise<void> => {
     try {
       const response = await api.post<LoginResponse>("/auth/login", values);
       const responseData = response.data.data ?? response.data;
