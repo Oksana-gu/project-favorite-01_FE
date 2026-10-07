@@ -77,7 +77,7 @@ export default function RegistrationForm() {
       });
 
       setUser(user);
-      router.push("/profile");
+      router.replace(`/profile/${encodeURIComponent(user._id)}`);
     } catch (error) {
       const message = isAxiosError(error)
         ? error.response?.data?.message
@@ -109,7 +109,9 @@ export default function RegistrationForm() {
                   type={type}
                   placeholder={placeholder}
                   autoComplete={autoComplete}
-                  className={hasError ? `${css.input} ${css.inputError}` : css.input}
+                  className={
+                    hasError ? `${css.input} ${css.inputError}` : css.input
+                  }
                 />
                 <ErrorMessage name={name} component="p" className={css.error} />
               </div>

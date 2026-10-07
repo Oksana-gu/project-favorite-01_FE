@@ -22,6 +22,19 @@ interface FormValues {
   password: string;
 }
 
+interface LoginResponseUser {
+  id?: string;
+  _id?: string;
+}
+
+interface LoginResponseData extends LoginResponseUser {
+  user?: LoginResponseUser;
+}
+
+interface LoginResponse extends LoginResponseData {
+  data?: LoginResponseData;
+}
+
 export default function LoginForm() {
   const router = useRouter();
 
@@ -35,17 +48,21 @@ export default function LoginForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      const response = await api.post("/auth/login", values);
-      console.log("res" + response);
+      const response = await api.post<LoginResponse>("/auth/login", values);
+      const responseData = response.data.data ?? response.data;
+      const userId =
+        responseData.user?.id ??
+        responseData.user?._id ??
+        responseData.id ??
+        responseData._id;
+
+      if (!userId) {
+        toast.error("Не вдалося визначити ID користувача після входу.");
+        return;
+      }
 
       toast.success("Авторизація успішна!");
-
-      const userId = response.data?.user?.id || response.data?.id;
-      if (userId) {
-        router.push(`/profile/${userId}`);
-      } else {
-        router.push("/profile");
-      }
+      router.replace(`/profile/${encodeURIComponent(userId)}`);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
