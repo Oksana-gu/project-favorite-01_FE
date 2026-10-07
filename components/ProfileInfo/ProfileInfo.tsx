@@ -1,40 +1,52 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import css from "./ProfileInfo.module.css";
 
 interface ProfileInfoProps {
-  avatar?: string | null;
+  avatar?: string;
   username: string;
   locationsCount?: number;
 }
 
-const ProfileInfo = ({
+const LOCAL_DEFAULT_AVATAR = "/default-avatar.png";
+
+export default function ProfileInfo({
   avatar,
   username,
-  locationsCount,
-}: ProfileInfoProps) => {
+  locationsCount = 0,
+}: ProfileInfoProps) {
+  const isValidAvatar =
+    Boolean(avatar) &&
+    typeof avatar === "string" &&
+    avatar.trim().startsWith("http");
+
+  const initialAvatarSrc = isValidAvatar ? (avatar as string) : LOCAL_DEFAULT_AVATAR;
+
+  const [imgSrc, setImgSrc] = useState<string>(initialAvatarSrc);
+
+  const handleError = () => {
+    if (imgSrc !== LOCAL_DEFAULT_AVATAR) {
+      setImgSrc(LOCAL_DEFAULT_AVATAR);
+    }
+  };
+
   return (
     <div className={css.profile}>
-      {avatar ? (
-        <Image
-          className={css.avatar}
-          src={avatar}
-          alt={`Аватар користувача ${username}`}
-          width={145}
-          height={145}
-        />
-      ) : (
-        <div
-          className={`${css.avatar} ${css.avatarPlaceholder}`}
-          aria-label="Аватар користувача відсутній"
-        />
-      )}
-      <div className={css.avatarContent}>
+      <Image
+        className={css.avatar}
+        src={imgSrc}
+        alt={`Аватар користувача ${username}`}
+        width={120}
+        height={120}
+        priority
+        onError={handleError}
+      />
+      <div>
         <h1 className={css.username}>{username}</h1>
-
-        <p className={css.articlesCount}>Статей: {locationsCount ?? 0}</p>
+        <p className={css.stats}>Статей: {locationsCount}</p>
       </div>
     </div>
   );
-};
-
-export default ProfileInfo;
+}

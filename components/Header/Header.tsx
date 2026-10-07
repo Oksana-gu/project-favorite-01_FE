@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import css from "./Header.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store";
 import Profile from "./Profile/Profile";
 import NavList from "./NavList/NavList";
@@ -15,15 +15,28 @@ import { useCloseOnMediaQuery } from "@/hooks/useCloseOnMediaQuery";
 
 export default function Header() {
   const pathname = usePathname();
+
   const isAuth = useAuthStore((state) => state.isLoggedIn);
   const user = useAuthStore((state) => state.user);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMenuClick = () => {
+  const checkAuth = useAuthStore((state) => 
+    'checkAuth' in state && typeof state.checkAuth === 'function' ? state.checkAuth :
+    'getMe' in state && typeof state.getMe === 'function' ? state.getMe : undefined
+  );
+
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (checkAuth) {
+      void checkAuth();
+    }
+  }, [checkAuth]);
+
+  const handleMenuClick = (): void => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  const closeMenu = () => {
+  const closeMenu = (): void => {
     setIsMenuOpen(false);
   };
 

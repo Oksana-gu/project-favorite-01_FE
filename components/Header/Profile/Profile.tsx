@@ -1,7 +1,6 @@
 "use client";
-0;
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import css from "./Profile.module.css";
 import type { User } from "@/types/auth";
@@ -13,27 +12,38 @@ interface ProfileProps {
   onNavigate?: () => void;
 }
 
+const LOCAL_DEFAULT_AVATAR = "/default-avatar.png";
+
 export default function Profile({ user, onNavigate }: ProfileProps) {
   const router = useRouter();
+  const [hasError, setHasError] = useState<boolean>(false);
 
-  const handleLogout = () => {
+  const isCustomAvatarValid =
+    Boolean(user?.avatarUrl) && user?.avatarUrl?.trim() !== "";
+
+  const avatarSrc =
+    !hasError && isCustomAvatarValid
+      ? (user?.avatarUrl as string)
+      : LOCAL_DEFAULT_AVATAR;
+
+  const handleLogout = (): void => {
     router.push("/confirmation");
     onNavigate?.();
   };
-
-  const avatarUrl = user?.avatarUrl || "/default-avatar.png";
 
   return (
     <div className={css.profileWrapper}>
       <div className={css.editButton}>
         <Image
+          key={user?.avatarUrl || "default"}
           className={css.profileImage}
-          src={avatarUrl}
+          src={avatarSrc}
           alt="Profile image"
           width={32}
           height={32}
           unoptimized
           loading="eager"
+          onError={() => setHasError(true)}
         />
         <span className={css.profileName}>{formatUserName(user?.name)}</span>
       </div>
@@ -44,7 +54,7 @@ export default function Profile({ user, onNavigate }: ProfileProps) {
         className={css.profileLogoutButton}
         onClick={handleLogout}
         type="button"
-        aria-label="Wijti  profilu"
+        aria-label="Вийти з профілю"
       >
         {React.createElement(
           "svg",

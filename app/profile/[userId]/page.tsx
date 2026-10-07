@@ -5,7 +5,7 @@ import ProfileClient from "./ProfilePage.client";
 import css from "./ProfilePage.module.css";
 import type { CurrentUserResponse, UserProfileResponse } from "@/types/profile";
 
-const API_URL = process.env.BACKEND_API_URL;
+const API_URL = "https://project-favorite-01-be.onrender.com";
 
 interface ProfilePageProps {
   params: Promise<{
@@ -16,8 +16,13 @@ interface ProfilePageProps {
 const ProfilePage = async ({ params }: ProfilePageProps) => {
   const { userId } = await params;
 
-  const profileResponse = await fetch(
+  if (!userId || userId === "undefined") {
+    notFound();
+  }
+
+  const profileResponse: Response = await fetch(
     `${API_URL}/api/users/${encodeURIComponent(userId)}`,
+    { cache: "no-store" }
   );
 
   if (profileResponse.status === 404) {
@@ -28,31 +33,35 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
     throw new Error("Не вдалося отримати інформацію про користувача");
   }
 
-  const profileData = (await profileResponse.json()) as UserProfileResponse;
-
+  const profileData: UserProfileResponse = await profileResponse.json();
   const profileUser = profileData.data;
 
   let isOwnProfile = false;
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  const sessionId = cookieStore.get("sessionId")?.value;
+  const cookieHeader: string = cookieStore.toString();
 
-  if (accessToken && sessionId) {
-    const currentUserResponse = await fetch(`${API_URL}/api/users/me`, {
-      headers: {
-        Cookie: `accessToken=${accessToken}; sessionId=${sessionId}`,
-      },
-      cache: "no-store",
-    });
+  if (cookieHeader) {
+    try {
+      const currentUserResponse: Response = await fetch(`${API_URL}/api/users/me`, {
+        headers: {
+          Cookie: cookieHeader,
+        },
+        cache: "no-store",
+      });
 
-    if (currentUserResponse.ok) {
-      const currentUserData =
-        (await currentUserResponse.json()) as CurrentUserResponse;
+      if (currentUserResponse.ok) {
+        const currentUserData: CurrentUserResponse = await currentUserResponse.json();
+        const currentUser = currentUserData.data;
 
-      const currentUser = currentUserData.data;
-
-      isOwnProfile = currentUser.id === profileUser._id;
+        isOwnProfile = currentUser.id === profileUser._id;
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Помилка під час перевірки поточного користувача:", err.message);
+      } else {
+        console.error("Невідома помилка під час перевірки користувача");
+      }
     }
   }
 

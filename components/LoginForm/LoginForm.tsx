@@ -3,9 +3,9 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { api } from "@/src/lib/api";
+import { useAuthStore } from "@/store";
 import styles from "./LoginForm.module.css";
 
 const loginSchema = Yup.object().shape({
@@ -22,8 +22,29 @@ interface FormValues {
   password: string;
 }
 
+interface UserPayload {
+  id?: string;
+  _id?: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+}
+
+interface LoginResponseData {
+  data?: {
+    user?: UserPayload;
+    id?: string;
+    _id?: string;
+  };
+  user?: UserPayload;
+  id?: string;
+  _id?: string;
+}
+
 export default function LoginForm() {
-  const router = useRouter();
+  const setUser = useAuthStore((state) => 
+    'setUser' in state && typeof state.setUser === 'function' ? state.setUser : undefined
+  );
 
   const initialValues: FormValues = {
     email: "",
@@ -32,19 +53,46 @@ export default function LoginForm() {
 
   const handleSubmit = async (
     values: FormValues,
-    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
-  ) => {
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+  ): Promise<void> => {
     try {
-      const response = await api.post("/auth/login", values);
-      console.log("res" + response);
+      const response = await api.post<LoginResponseData>("/auth/login", values);
 
       toast.success("Авторизація успішна!");
 
-      const userId = response.data?.user?.id || response.data?.id;
-      if (userId) {
-        router.push(`/profile/${userId}`);
+      const responseData = response.data;
+      const userObj =
+        responseData?.data?.user || responseData?.user || responseData?.data;
+
+      if (userObj && typeof setUser === "function") {
+        setUser(userObj as unknown as Parameters<typeof setUser>[0]);
+      }
+
+      const userId =
+        userObj?.id ||
+        userObj?._id ||
+        responseData?.id ||
+        responseData?._id;
+
+      if (userId && userId !== "undefined") {
+        window.location.href = `/profile/${userId}`;
       } else {
-        router.push("/profile");
+        try {
+          const meRes = await api.get("/users/me");
+          const myId =
+            meRes.data?.data?.id ||
+            meRes.data?.data?._id ||
+            meRes.data?.id;
+
+          if (myId) {
+            window.location.href = `/profile/${myId}`;
+            return;
+          }
+        } catch (meError: unknown) {
+          console.error("Не вдалося отримати профайл користувача:", meError);
+        }
+
+        window.location.href = "/";
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
