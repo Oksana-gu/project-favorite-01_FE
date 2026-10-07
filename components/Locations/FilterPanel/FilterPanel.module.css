@@ -36,39 +36,25 @@
   font-weight: 600;
 }
 
-/* Стилі checkbox-групи для вмикання після підтримки множинного фільтра бекендом: */
-/* 
-.typeOptions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 12px;
-  max-height: 220px;
-  overflow-y: auto;
-  padding: 10px;
+.typeSelect {
+  --location-type-select-height: 44px;
+  --location-type-value-padding: 0 12px;
+
+  width: 100%;
+  min-width: 0;
 }
 
-.typeOptions legend {
-  grid-column: 1 / -1;
-  padding: 0 4px;
-  color: var(--color-coral-darkest);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.control .typeOption {
+.typeOption {
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-width: 0;
-  color: var(--color-neutral-dark);
-  font-size: 12px;
-  font-weight: 400;
+  gap: 8px;
 }
 
-.typeOption input {
+.typeCheckbox {
   flex: 0 0 auto;
   accent-color: var(--color-coral-dark);
-} */
+  pointer-events: none;
+}
 
 .control select,
 .searchInput {
@@ -131,14 +117,15 @@
     display: none;
   }
 
-  /* .typeOptions .typeOption {
-    display: flex;
-  } */
-
   .control select {
     min-height: 36px;
     padding: 0 8px;
     background-color: var(--color-coral-lighter);
+  }
+
+  .typeSelect {
+    --location-type-select-height: 36px;
+    --location-type-value-padding: 0 8px;
   }
 }
 

@@ -101,17 +101,19 @@ export const getLocations = async ({
   locationType,
   sort,
 }: GetLocationsParams): Promise<LocationsResponse> => {
+  const locationTypes = locationType?.split(",").filter(Boolean);
   const params = {
     page,
     limit,
     ...(search && { search }),
     ...(region && { region }),
-    ...(locationType && { locationType }),
+    ...(locationTypes?.length && { locationType: locationTypes }),
     ...(sort && { sortBy: sort }),
   };
 
   const { data } = await publicApi.get<LocationsResponse>("/locations", {
     params,
+    paramsSerializer: { indexes: null },
   });
   return data;
 };
