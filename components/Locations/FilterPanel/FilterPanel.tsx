@@ -2,7 +2,12 @@
 
 import css from "./FilterPanel.module.css";
 import { getLocationTypes, getRegions } from "@/lib/locationsApi";
-import { useState } from "react";
+import Select, {
+  components,
+  type OptionProps,
+  type StylesConfig,
+} from "react-select";
+import { useState, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -13,6 +18,100 @@ interface FilterPanelProps {
   sort: string | undefined;
 }
 
+interface LocationTypeOption {
+  value: string;
+  label: string;
+}
+
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
+
+function CheckboxOption(props: OptionProps<LocationTypeOption, true>) {
+  return (
+    <components.Option {...props}>
+      <span className={css.typeOption}>
+        <input
+          className={css.typeCheckbox}
+          type="checkbox"
+          checked={props.isSelected}
+          readOnly
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+        {props.children}
+      </span>
+    </components.Option>
+  );
+}
+
+const locationTypeSelectStyles: StylesConfig<LocationTypeOption, true> = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: "var(--location-type-select-height)",
+    border: "1px solid rgba(76, 38, 19, 0.14)",
+    borderColor: state.isFocused
+      ? "var(--color-coral-dark)"
+      : "rgba(76, 38, 19, 0.14)",
+    borderRadius: 6,
+    backgroundColor: "var(--color-coral-lighter)",
+    boxShadow: "none",
+    fontFamily: "inherit",
+    fontSize: 14,
+    outline: state.isFocused ? "2px solid var(--color-coral-dark)" : "none",
+    outlineOffset: 2,
+    "&:hover": {
+      borderColor: "rgba(76, 38, 19, 0.3)",
+    },
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    minWidth: 0,
+    padding: "var(--location-type-value-padding)",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "var(--color-coral-darkest)",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    maxWidth: 140,
+    borderRadius: 4,
+    backgroundColor: "rgba(76, 38, 19, 0.1)",
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    overflow: "hidden",
+    color: "var(--color-coral-darkest)",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  }),
+  multiValueRemove: (base) => ({
+    ...base,
+    color: "var(--color-coral-darkest)",
+    borderRadius: "0 4px 4px 0",
+    "&:hover": {
+      backgroundColor: "rgba(76, 38, 19, 0.15)",
+      color: "var(--color-coral-darkest)",
+    },
+  }),
+  menu: (base) => ({
+    ...base,
+    zIndex: 5,
+    backgroundColor: "var(--color-coral-lighter)",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "var(--color-coral-light)"
+      : state.isFocused
+        ? "var(--color-coral-lightest)"
+        : "var(--color-coral-lighter)",
+    color: "var(--color-coral-darkest)",
+    cursor: "pointer",
+  }),
+};
+
 export default function FilterPanel({
   region,
   locationType,
@@ -21,8 +120,11 @@ export default function FilterPanel({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const typeFromUrl =
-    searchParams.get("locationType")?.split(",")[0] ?? locationType ?? "";
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getHydratedSnapshot,
+    getServerHydrationSnapshot,
+  );
 
   const selectedTypes = (searchParams.get("locationType") ?? locationType ?? "")
     .split(",")
@@ -69,16 +171,6 @@ export default function FilterPanel({
   const handleRegionChange = (value: string) => {
     updateUrlFilter("region", value);
   };
-  const handleTypeChange = (value: string) => {
-    updateUrlFilter("locationType", value);
-  };
-
-  // const handleMultipleTypesChange = (slug: string) => {
-  //   const nextTypes = selectedTypes.includes(slug)
-  //     ? selectedTypes.filter((selectedType) => selectedType !== slug)
-  //     : [...selectedTypes, slug];
-  //   updateUrlFilter("locationType", nextTypes.join(","));
-  // };
 
   const handleSortChange = (value: string) => {
     updateUrlFilter("sort", value);
@@ -102,23 +194,40 @@ export default function FilterPanel({
       <div className={css.filterRow}>
         <div className={css.control}>
           <label htmlFor="locationType">Тип локації</label>
-          <select
-            id="locationType"
-            value={typeFromUrl}
-            onChange={(event) => handleTypeChange(event.target.value)}
-          >
-            <option value="">Тип локації</option>
-            {isLocationTypesPending && (
-              <option value="" disabled>
-                Завантаження типів локацій...
-              </option>
-            )}
-            {locationTypes.map((type) => (
-              <option key={type._id} value={type.slug}>
-                {type.type}
-              </option>
-            ))}
-          </select>
+          {isHydrated ? (
+            <Select<LocationTypeOption, true>
+              inputId="locationType"
+              className={css.typeSelect}
+              classNamePrefix="locationTypeSelect"
+              styles={locationTypeSelectStyles}
+              options={locationTypes.map((type) => ({
+                value: type.slug,
+                label: type.type,
+              }))}
+              value={locationTypes
+                .filter((type) => selectedTypes.includes(type.slug))
+                .map((type) => ({ value: type.slug, label: type.type }))}
+              onChange={(options) =>
+                updateUrlFilter(
+                  "locationType",
+                  options.map((option) => option.value).join(","),
+                )
+              }
+              components={{ Option: CheckboxOption }}
+              isMulti
+              isClearable
+              isLoading={isLocationTypesPending}
+              isDisabled={isLocationTypesPending || !!locationTypesError}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              placeholder="Тип локації"
+              noOptionsMessage={() => "Типи локацій не знайдено"}
+            />
+          ) : (
+            <div className={`${css.typeSelect} ${css.typeSelectFallback}`}>
+              Тип локації
+            </div>
+          )}
           {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
         </div>
 
