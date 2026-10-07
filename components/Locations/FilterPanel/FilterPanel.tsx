@@ -7,7 +7,7 @@ import Select, {
   type OptionProps,
   type StylesConfig,
 } from "react-select";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -22,6 +22,10 @@ interface LocationTypeOption {
   value: string;
   label: string;
 }
+
+const subscribeToHydration = () => () => {};
+const getHydratedSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
 
 function CheckboxOption(props: OptionProps<LocationTypeOption, true>) {
   return (
@@ -116,6 +120,11 @@ export default function FilterPanel({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getHydratedSnapshot,
+    getServerHydrationSnapshot,
+  );
 
   const selectedTypes = (searchParams.get("locationType") ?? locationType ?? "")
     .split(",")
@@ -185,34 +194,40 @@ export default function FilterPanel({
       <div className={css.filterRow}>
         <div className={css.control}>
           <label htmlFor="locationType">Тип локації</label>
-          <Select<LocationTypeOption, true>
-            inputId="locationType"
-            className={css.typeSelect}
-            classNamePrefix="locationTypeSelect"
-            styles={locationTypeSelectStyles}
-            options={locationTypes.map((type) => ({
-              value: type.slug,
-              label: type.type,
-            }))}
-            value={locationTypes
-              .filter((type) => selectedTypes.includes(type.slug))
-              .map((type) => ({ value: type.slug, label: type.type }))}
-            onChange={(options) =>
-              updateUrlFilter(
-                "locationType",
-                options.map((option) => option.value).join(","),
-              )
-            }
-            components={{ Option: CheckboxOption }}
-            isMulti
-            isClearable
-            isLoading={isLocationTypesPending}
-            isDisabled={isLocationTypesPending || !!locationTypesError}
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            placeholder="Тип локації"
-            noOptionsMessage={() => "Типи локацій не знайдено"}
-          />
+          {isHydrated ? (
+            <Select<LocationTypeOption, true>
+              inputId="locationType"
+              className={css.typeSelect}
+              classNamePrefix="locationTypeSelect"
+              styles={locationTypeSelectStyles}
+              options={locationTypes.map((type) => ({
+                value: type.slug,
+                label: type.type,
+              }))}
+              value={locationTypes
+                .filter((type) => selectedTypes.includes(type.slug))
+                .map((type) => ({ value: type.slug, label: type.type }))}
+              onChange={(options) =>
+                updateUrlFilter(
+                  "locationType",
+                  options.map((option) => option.value).join(","),
+                )
+              }
+              components={{ Option: CheckboxOption }}
+              isMulti
+              isClearable
+              isLoading={isLocationTypesPending}
+              isDisabled={isLocationTypesPending || !!locationTypesError}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              placeholder="Тип локації"
+              noOptionsMessage={() => "Типи локацій не знайдено"}
+            />
+          ) : (
+            <div className={`${css.typeSelect} ${css.typeSelectFallback}`}>
+              Тип локації
+            </div>
+          )}
           {locationTypesError && <p>Не вдалося завантажити типи локацій.</p>}
         </div>
 
