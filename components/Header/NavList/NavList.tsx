@@ -9,11 +9,7 @@ interface NavListProps {
   onNavigate?: () => void;
 }
 
-export default function NavList({
-  isAuth,
-  userId,
-  onNavigate,
-}: NavListProps) {
+export default function NavList({ isAuth, userId, onNavigate }: NavListProps) {
   return (
     <ul className={css.navList}>
       <li className={css.navItem}>
