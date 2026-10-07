@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { getBackendApiUrl } from "@/lib/api/backendUrl";
 
 const AUTH_COOKIES = ["accessToken", "sessionId"];
 
@@ -13,17 +14,8 @@ export const getAuthCookieHeader = async () => {
 };
 
 export const proxyToBackend = async (path: string, init: RequestInit = {}) => {
-  const baseUrl = process.env.BACKEND_API_URL;
-
-  if (!baseUrl) {
-    return NextResponse.json(
-      { message: "BACKEND_API_URL is not configured" },
-      { status: 500 },
-    );
-  }
-
   try {
-    const response = await fetch(`${baseUrl}${path}`, {
+    const response = await fetch(`${getBackendApiUrl()}${path}`, {
       ...init,
       cache: "no-store",
     });

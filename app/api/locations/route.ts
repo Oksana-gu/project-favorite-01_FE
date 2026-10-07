@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Invalid form data" }, { status: 400 });
   }
 
-  return proxyToBackend("/api/locations", {
+  return proxyToBackend("/locations", {
     method: "POST",
     body: formData,
     headers: { Cookie: await getAuthCookieHeader() },

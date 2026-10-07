@@ -3,6 +3,7 @@ import {
   REGIONS,
   type SelectOption,
 } from "@/lib/constants/locationOptions";
+import { getBackendApiUrl } from "@/lib/api/backendUrl";
 
 interface CategoriesResponse {
   regions: { slug: string; region: string }[];
@@ -23,10 +24,9 @@ const FALLBACK_OPTIONS: LocationFormOptions = {
 export const getLocationFormOptions =
   async (): Promise<LocationFormOptions> => {
     try {
-      const response = await fetch(
-        `${process.env.BACKEND_API_URL}/api/categories`,
-        { next: { revalidate: 3600 } },
-      );
+      const response = await fetch(`${getBackendApiUrl()}/categories`, {
+        next: { revalidate: 3600 },
+      });
       if (!response.ok) return FALLBACK_OPTIONS;
 
       const { regions, locationTypes }: CategoriesResponse =
