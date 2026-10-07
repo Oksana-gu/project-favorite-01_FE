@@ -2,19 +2,23 @@ import ReviewsBlock from "./ReviewsBlock";
 import { getAllLocations } from "@/utils/getAllLocations";
 import { getAllFeedbacksSorted } from "@/lib/feedbacks";
 import getFeedbackWithLocationName from "@/utils/getFeedbackWithLocationName";
+import type { FeedbackWithLocation } from "@/types/feedbacks";
+
+export const revalidate = 60;
 
 export default async function FeedbacksSection() {
+  let normalizedFeedbacks: FeedbackWithLocation[] = [];
+
   try {
     const locations = await getAllLocations();
     const feedbacks = await getAllFeedbacksSorted(locations);
-    const normalizedFeedbacks = getFeedbackWithLocationName(
+    normalizedFeedbacks = getFeedbackWithLocationName(
       feedbacks || [],
       locations || []
     );
-
-    return <ReviewsBlock feedbacks={normalizedFeedbacks} />;
   } catch (error) {
     console.error("Помилка завантаження відгуків:", error);
-    return <ReviewsBlock feedbacks={[]} />;
   }
+
+  return <ReviewsBlock feedbacks={normalizedFeedbacks} />;
 }

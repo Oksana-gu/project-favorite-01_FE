@@ -3,10 +3,11 @@ import { Feedback, FeedbacksResponse } from "@/types/feedbacks";
 import type { Location } from "@/types/profile";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://api.your-domain.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://project-favorite-01-be.onrender.com";
 
 const publicApi = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
 });
 
 const privateApi = axios.create({
@@ -16,17 +17,22 @@ const privateApi = axios.create({
 
 export interface AddFeedbackPayload {
   locationId: string;
+  userName: string;
   rate: number;
   description: string;
 }
 
 export async function getFeedbacks(
-  locationId?: string,
+  locationId: string,
   page = 1,
-  perPage = 10,
+  limit = 20,
 ): Promise<FeedbacksResponse> {
   const { data } = await publicApi.get<FeedbacksResponse>("/feedbacks", {
-    params: { locationId, page, perPage },
+    params: {
+      locationId,
+      page,
+      limit,
+    },
   });
 
   return data;
@@ -39,23 +45,38 @@ export async function getAllFeedbacksSorted(
     return [];
   }
 
-  const locationsWithFeedbacks = locations.filter(
-    (loc) => loc.feedbacksId && loc.feedbacksId.length > 0,
-  );
+  const validLocations = locations.filter((loc) => loc._id);
 
   const results = await Promise.allSettled(
-    locationsWithFeedbacks.map((loc) =>
-      getFeedbacks(loc._id, 1, loc.feedbacksId!.length),
-    ),
+    validLocations.map((loc) => getFeedbacks(loc._id, 1, 50)),
   );
 
-  const allFeedbacks: Feedback[] = results.flatMap((result) =>
-    result.status === "fulfilled" && result.value?.feedbacks
-      ? result.value.feedbacks
-      : [],
-  );
+  const allFeedbacks: Feedback[] = [];
 
-  return allFeedbacks.sort((a, b) => {
+  for (const result of results) {
+    if (result.status === "fulfilled" && result.value) {
+      const val = result.value as unknown as Record<string, unknown>;
+
+      let items: Feedback[] = [];
+      if (Array.isArray(val.feedbacks)) items = val.feedbacks as Feedback[];
+      else if (Array.isArray(val.data)) items = val.data as Feedback[];
+      else if (Array.isArray(val.result)) items = val.result as Feedback[];
+      else if (Array.isArray(val)) items = val as unknown as Feedback[];
+
+      if (items.length > 0) {
+        allFeedbacks.push(...items);
+      }
+    }
+  }
+
+  const uniqueFeedbacksMap = new Map<string, Feedback>();
+  for (const fb of allFeedbacks) {
+    if (fb._id) {
+      uniqueFeedbacksMap.set(fb._id, fb);
+    }
+  }
+
+  return Array.from(uniqueFeedbacksMap.values()).sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
     return dateB - dateA;
