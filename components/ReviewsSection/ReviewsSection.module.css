@@ -132,7 +132,31 @@
     cursor: pointer;
 }
 
-/* TABLET >= 768px */
+.navigation {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 32px;
+}
+
+.btnPrev,
+.btnNext {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+
+    padding: 0;
+
+    flex: 0 0 40px;
+}
+
+.iconPrev,
+.iconNext {
+    width: 20px;
+    height: 20px;
+}
 
 @media screen and (min-width: 768px) {
     .section {
@@ -161,7 +185,6 @@
     }
 }
 
-/* DESKTOP >= 1440px */
 
 @media screen and (min-width: 1440px) {
     .section {
