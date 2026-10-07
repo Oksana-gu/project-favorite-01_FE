@@ -1,87 +1,42 @@
-.pageWrapper {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #FFF2EC;
-    padding: 0 20px;
-    box-sizing: border-box;
+.main {
+    padding: 64px 20px;
 }
 
-.card {
-    width: 100%;
-    max-width: 335px;
+.content {
     display: flex;
     flex-direction: column;
     gap: 32px;
-    margin: auto 0;
-    padding-top: 72px;
-    box-sizing: border-box;
+    max-width: 644px;
+    margin: 0 auto;
 }
 
 .title {
+    margin: 0;
     font-family: 'Montserrat', sans-serif;
     font-size: 28px;
     font-weight: 700;
-    color: #000000;
-    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
     text-align: center;
-}
-
-.footer {
-    font-family: 'Montserrat', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    font-size: 12px;
-    font-weight: 400;
-    color: #000000;
-    text-align: center;
-    width: 100%;
-    line-height: 150%;
-    padding-bottom: 20px;
+    color: #000;
 }
 
 @media (min-width: 768px) {
-    .pageWrapper {
-        padding: 0 32px;
-    }
-
-    .card {
-        max-width: 644px;
-        gap: 32px;
-        padding-top: 72px;
+    .main {
+        padding: 64px 32px;
     }
 
     .title {
-        font-size: 40px;
-    }
-
-    .footer {
-        padding-bottom: 32px;
+        font-size: 44px;
     }
 }
 
 @media (min-width: 1440px) {
-    .pageWrapper {
-        padding: 0 64px;
-    }
-
-    .card {
-        width: 100%;
-        max-width: 644px;
-        gap: 32px;
-        padding-top: 80px;
+    .main {
+        padding: 64px;
     }
 
     .title {
-        font-size: 40px;
-    }
-
-    .footer {
-        padding-bottom: 40px;
+        font-size: 52px;
     }
 }

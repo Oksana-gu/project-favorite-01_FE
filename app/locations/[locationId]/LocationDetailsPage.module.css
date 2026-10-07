@@ -70,8 +70,6 @@
         display: grid;
         grid-template-columns: 1fr 592px;
         min-height: 400px;
-
-        border: 1px solid #6b6b6b;
         box-sizing: border-box;
     }
 
