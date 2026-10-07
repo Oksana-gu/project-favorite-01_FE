@@ -39,6 +39,17 @@ interface LoginResponseData {
   user?: UserPayload;
   id?: string;
   _id?: string;
+interface LoginResponseUser {
+  id?: string;
+  _id?: string;
+}
+
+interface LoginResponseData extends LoginResponseUser {
+  user?: LoginResponseUser;
+}
+
+interface LoginResponse extends LoginResponseData {
+  data?: LoginResponseData;
 }
 
 export default function LoginForm() {
@@ -56,44 +67,21 @@ export default function LoginForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ): Promise<void> => {
     try {
-      const response = await api.post<LoginResponseData>("/auth/login", values);
+      const response = await api.post<LoginResponse>("/auth/login", values);
+      const responseData = response.data.data ?? response.data;
+      const userId =
+        responseData.user?.id ??
+        responseData.user?._id ??
+        responseData.id ??
+        responseData._id;
+
+      if (!userId) {
+        toast.error("Не вдалося визначити ID користувача після входу.");
+        return;
+      }
 
       toast.success("Авторизація успішна!");
-
-      const responseData = response.data;
-      const userObj =
-        responseData?.data?.user || responseData?.user || responseData?.data;
-
-      if (userObj && typeof setUser === "function") {
-        setUser(userObj as unknown as Parameters<typeof setUser>[0]);
-      }
-
-      const userId =
-        userObj?.id ||
-        userObj?._id ||
-        responseData?.id ||
-        responseData?._id;
-
-      if (userId && userId !== "undefined") {
-        window.location.href = `/profile/${userId}`;
-      } else {
-        try {
-          const meRes = await api.get("/users/me");
-          const myId =
-            meRes.data?.data?.id ||
-            meRes.data?.data?._id ||
-            meRes.data?.id;
-
-          if (myId) {
-            window.location.href = `/profile/${myId}`;
-            return;
-          }
-        } catch (meError: unknown) {
-          console.error("Не вдалося отримати профайл користувача:", meError);
-        }
-
-        window.location.href = "/";
-      }
+      router.replace(`/profile/${encodeURIComponent(userId)}`);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =

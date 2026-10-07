@@ -5,7 +5,9 @@ import ProfileClient from "./ProfilePage.client";
 import css from "./ProfilePage.module.css";
 import type { CurrentUserResponse, UserProfileResponse } from "@/types/profile";
 
-const API_URL = "https://project-favorite-01-be.onrender.com";
+const API_URL = (process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL)
+  ?.replace(/\/+$/, "")
+  .replace(/\/api$/, "");
 
 interface ProfilePageProps {
   params: Promise<{
@@ -16,11 +18,13 @@ interface ProfilePageProps {
 const ProfilePage = async ({ params }: ProfilePageProps) => {
   const { userId } = await params;
 
-  if (!userId || userId === "undefined") {
-    notFound();
+  if (!API_URL) {
+    throw new Error(
+      "BACKEND_API_URL or NEXT_PUBLIC_API_URL must be configured",
+    );
   }
 
-  const profileResponse: Response = await fetch(
+  const profileResponse = await fetch(
     `${API_URL}/api/users/${encodeURIComponent(userId)}`,
     { cache: "no-store" }
   );
