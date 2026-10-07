@@ -23,7 +23,7 @@ export interface AddFeedbackPayload {
 export async function getFeedbacks(
   locationId?: string,
   page = 1,
-  perPage = 10
+  perPage = 10,
 ): Promise<FeedbacksResponse> {
   const { data } = await publicApi.get<FeedbacksResponse>("/feedbacks", {
     params: { locationId, page, perPage },
@@ -33,26 +33,26 @@ export async function getFeedbacks(
 }
 
 export async function getAllFeedbacksSorted(
-  locations: Location[]
+  locations: Location[],
 ): Promise<Feedback[]> {
   if (!locations || locations.length === 0) {
     return [];
   }
 
   const locationsWithFeedbacks = locations.filter(
-    (loc) => loc.feedbacksId && loc.feedbacksId.length > 0
+    (loc) => loc.feedbacksId && loc.feedbacksId.length > 0,
   );
 
   const results = await Promise.allSettled(
     locationsWithFeedbacks.map((loc) =>
-      getFeedbacks(loc._id, 1, loc.feedbacksId!.length)
-    )
+      getFeedbacks(loc._id, 1, loc.feedbacksId!.length),
+    ),
   );
 
   const allFeedbacks: Feedback[] = results.flatMap((result) =>
     result.status === "fulfilled" && result.value?.feedbacks
       ? result.value.feedbacks
-      : []
+      : [],
   );
 
   return allFeedbacks.sort((a, b) => {
@@ -63,7 +63,7 @@ export async function getAllFeedbacksSorted(
 }
 
 export async function addFeedback(
-  payload: AddFeedbackPayload
+  payload: AddFeedbackPayload,
 ): Promise<Feedback> {
   const { data } = await privateApi.post<Feedback>("/feedbacks", payload);
 

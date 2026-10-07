@@ -19,8 +19,10 @@ export interface Location {
   ownerId: string | LocationOwner;
   feedbacksId: string[];
 }
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://api.your-domain.com";
 
-const api = axios.create({ baseURL: "/api" });
+const api = axios.create({ baseURL: API_BASE_URL });
 
 export const createLocation = async (formData: FormData) => {
   const { data } = await api.post<Location>("/locations", formData);
