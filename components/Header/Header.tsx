@@ -19,9 +19,12 @@ export default function Header() {
   const isAuth = useAuthStore((state) => state.isLoggedIn);
   const user = useAuthStore((state) => state.user);
 
-  const checkAuth = useAuthStore((state) => 
-    'checkAuth' in state && typeof state.checkAuth === 'function' ? state.checkAuth :
-    'getMe' in state && typeof state.getMe === 'function' ? state.getMe : undefined
+  const checkAuth = useAuthStore((state) =>
+    "checkAuth" in state && typeof state.checkAuth === "function"
+      ? state.checkAuth
+      : "getMe" in state && typeof state.getMe === "function"
+        ? state.getMe
+        : undefined,
   );
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -51,7 +54,7 @@ export default function Header() {
           {pathname !== "/login" && pathname !== "/register" && (
             <>
               <div className={css.navListWrapper}>
-                <NavList isAuth={isAuth} />
+                <NavList isAuth={isAuth} userId={user?.id ?? user?._id} />
               </div>
               <div className={css.authNavWrapper}>
                 <AuthNav isAuth={isAuth} onNavigate={closeMenu} />
