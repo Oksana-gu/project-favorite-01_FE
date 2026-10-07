@@ -53,9 +53,8 @@ interface LoginResponse extends LoginResponseData {
 }
 
 export default function LoginForm() {
-  const setUser = useAuthStore((state) => 
-    'setUser' in state && typeof state.setUser === 'function' ? state.setUser : undefined
-  );
+  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
 
   const initialValues: FormValues = {
     email: "",

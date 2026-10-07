@@ -21,6 +21,5 @@ export const getUserLocations = async ({
       },
     },
   );
-
   return data;
 };

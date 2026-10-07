@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { register } from "@/lib/api/clientApi";
-import { useAuthStore } from "@/lib/store/authStore";
+import { useAuthStore } from "@/store";
 import css from "./RegistrationForm.module.css";
 
 export interface RegistrationFormValues {
