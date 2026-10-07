@@ -5,10 +5,15 @@ import Link from "next/link";
 
 interface NavListProps {
   isAuth: boolean;
+  userId?: string;
   onNavigate?: () => void;
 }
 
-export default function NavList({ isAuth, onNavigate }: NavListProps) {
+export default function NavList({
+  isAuth,
+  userId,
+  onNavigate,
+}: NavListProps) {
   return (
     <ul className={css.navList}>
       <li className={css.navItem}>
@@ -29,10 +34,10 @@ export default function NavList({ isAuth, onNavigate }: NavListProps) {
           Місця відпочинку
         </Link>
       </li>
-      {isAuth && (
+      {isAuth && userId && (
         <li className={css.navItem}>
           <Link
-            href="/profile"
+            href={`/profile/${encodeURIComponent(userId)}`}
             onClick={onNavigate}
             aria-label="Перейти до мого профілю"
           >

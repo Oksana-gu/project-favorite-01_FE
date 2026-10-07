@@ -51,7 +51,7 @@ export default function Header() {
           {pathname !== "/login" && pathname !== "/register" && (
             <>
               <div className={css.navListWrapper}>
-                <NavList isAuth={isAuth} />
+                <NavList isAuth={isAuth} userId={user?.id ?? user?._id} />
               </div>
               <div className={css.authNavWrapper}>
                 <AuthNav isAuth={isAuth} onNavigate={closeMenu} />
