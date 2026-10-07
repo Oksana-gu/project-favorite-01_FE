@@ -5,7 +5,8 @@ import Image from "next/image";
 import css from "./Profile.module.css";
 import type { User } from "@/types/auth";
 import formatUserName from "@/utils/getShortUsernameHeader";
-import { useRouter } from "next/navigation";
+import { api } from "@/src/lib/api";
+import { useAuthStore } from "@/store";
 
 interface ProfileProps {
   user: User | null;
@@ -15,8 +16,15 @@ interface ProfileProps {
 const LOCAL_DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function Profile({ user, onNavigate }: ProfileProps) {
-  const router = useRouter();
   const [hasError, setHasError] = useState<boolean>(false);
+
+  const clearAuth = useAuthStore((state) =>
+    'clearAuth' in state && typeof state.clearAuth === 'function'
+      ? state.clearAuth
+      : 'logout' in state && typeof state.logout === 'function'
+      ? state.logout
+      : undefined
+  );
 
   const isCustomAvatarValid =
     Boolean(user?.avatarUrl) && user?.avatarUrl?.trim() !== "";
@@ -26,9 +34,20 @@ export default function Profile({ user, onNavigate }: ProfileProps) {
       ? (user?.avatarUrl as string)
       : LOCAL_DEFAULT_AVATAR;
 
-  const handleLogout = (): void => {
-    router.push("/confirmation");
-    onNavigate?.();
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("Помилка під час виходу з сервера:", error);
+    } finally {
+      if (typeof clearAuth === "function") {
+        clearAuth();
+      }
+
+      onNavigate?.();
+
+      window.location.href = "/";
+    }
   };
 
   return (
