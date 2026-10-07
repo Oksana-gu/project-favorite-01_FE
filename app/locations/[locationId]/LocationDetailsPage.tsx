@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { defaultReviews } from "@/data/defaultReviews";
 import type {
   LocationDetails,
   LocationOwner,
@@ -82,7 +82,7 @@ export default function LocationDetailsPage({
           },
         );
 
-        setReviews(data.data);
+        setReviews([...defaultReviews, ...(data.data ?? [])]);
       } catch (error) {
         console.error("Failed to load reviews:", error);
         setReviewsError("Не вдалося завантажити відгуки.");
