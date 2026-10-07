@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { api } from "@/src/lib/api";
 import { useAuthStore } from "@/store";
 import styles from "./LoginForm.module.css";
+import { useRouter } from "next/navigation";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -52,7 +53,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (
     values: FormValues,
-    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ): Promise<void> => {
     try {
       const response = await api.post<LoginResponseData>("/auth/login", values);
