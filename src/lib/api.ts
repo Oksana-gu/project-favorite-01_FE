@@ -1,16 +1,10 @@
-import axios, {
-  AxiosError,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const BASE_URL = "https://project-favorite-01-be.onrender.com/api";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://project-favorite-01-be.onrender.com/api";
 
 export const api = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
-});
-
-const refreshApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
@@ -36,7 +30,7 @@ api.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      await refreshApi.post("/auth/refresh");
+      await api.post("/auth/refresh");
 
       return api(originalRequest);
     } catch (refreshError) {
