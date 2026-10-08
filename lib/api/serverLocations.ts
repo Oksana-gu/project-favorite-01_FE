@@ -1,10 +1,11 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import type { Location } from "@/lib/api/locations";
+import { getBackendApiUrl } from "@/lib/api/backendUrl";
 
 export const getLocationByIdServer = cache(async (id: string) => {
   const response = await fetch(
-    `${process.env.BACKEND_API_URL}/api/locations/${encodeURIComponent(id)}`,
+    `${getBackendApiUrl()}/locations/${encodeURIComponent(id)}`,
     { cache: "no-store" },
   );
 

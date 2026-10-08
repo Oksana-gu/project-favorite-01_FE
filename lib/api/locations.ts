@@ -20,9 +20,11 @@ export interface Location {
   feedbacksId: string[];
 }
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://api.your-domain.com";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://project-favorite-01-be.onrender.com/api";
 
-const api = axios.create({ baseURL: API_BASE_URL });
+// own instance: the shared one forces Content-Type: application/json, which breaks FormData
+const api = axios.create({ baseURL: API_BASE_URL, withCredentials: true });
 
 export const createLocation = async (formData: FormData) => {
   const { data } = await api.post<Location>("/locations", formData);

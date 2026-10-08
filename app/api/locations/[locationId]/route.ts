@@ -8,7 +8,7 @@ interface RouteContext {
 export async function GET(_request: NextRequest, { params }: RouteContext) {
   const { locationId } = await params;
 
-  return proxyToBackend(`/api/locations/${encodeURIComponent(locationId)}`);
+  return proxyToBackend(`/locations/${encodeURIComponent(locationId)}`);
 }
 
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
@@ -20,7 +20,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ message: "Invalid form data" }, { status: 400 });
   }
 
-  return proxyToBackend(`/api/locations/${encodeURIComponent(locationId)}`, {
+  return proxyToBackend(`/locations/${encodeURIComponent(locationId)}`, {
     method: "PATCH",
     body: formData,
     headers: { Cookie: await getAuthCookieHeader() },
