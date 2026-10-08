@@ -3,11 +3,11 @@
 import React, { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
-import { AddReviewForm } from "../AddReviewForm/AddReviewForm";
 import toast from "react-hot-toast";
+import { AddReviewForm } from "../AddReviewForm/AddReviewForm";
+import { addFeedback } from "@/lib/feedbacks";
+import { useAuthStore } from "@/store/authStore";
 import styles from "./AddReviewModal.module.css";
-import { api } from "@/src/lib/api";
-import { useAuthStore } from "@/store";
 
 interface AddReviewModalProps {
   locationId: string;
@@ -17,6 +17,7 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
   locationId,
 }) => {
   const router = useRouter();
+
   const user = useAuthStore((state) => state.user);
 
   const handleClose = useCallback(() => {
@@ -37,25 +38,33 @@ export const AddReviewModal: React.FC<AddReviewModalProps> = ({
     rate: number;
     description: string;
   }) => {
-    try {
-      if (!user?.name) {
-        toast.error("Не вдалося визначити користувача");
-        return;
-      }
+    const rawUser = user as unknown as Record<string, unknown> | null;
+    const currentUserName =
+      user?.name || (rawUser?.userName as string) || user?.email;
 
-      await api.post("/feedbacks", {
+    if (!currentUserName) {
+      toast.error(
+        "Не вдалося визначити ім'я користувача. Будь ласка, авторизуйтесь.",
+      );
+      return;
+    }
+
+    try {
+      await addFeedback({
         locationId,
-        userName: user.name,
+        userName: currentUserName,
         rate: values.rate,
         description: values.description,
       });
 
-      toast.success("Відгук відправлено!");
+      toast.success("Відгук успішно додано!");
+
+      router.refresh();
+
       handleClose();
-    } catch (error) {
-      console.error("Помилка відправки відгуку:", error);
-      toast.error("Не вдалося зберегти відгук");
-      throw error;
+    } catch (error: unknown) {
+      console.error("Помилка при створенні відгуку:", error);
+      toast.error("Не вдалося зберегти відгук. Перевірте авторизацію.");
     }
   };
   return (
