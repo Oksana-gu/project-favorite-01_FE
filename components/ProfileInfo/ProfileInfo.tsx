@@ -22,7 +22,9 @@ export default function ProfileInfo({
     typeof avatar === "string" &&
     avatar.trim().startsWith("http");
 
-  const initialAvatarSrc = isValidAvatar ? (avatar as string) : LOCAL_DEFAULT_AVATAR;
+  const initialAvatarSrc = isValidAvatar
+    ? (avatar as string)
+    : LOCAL_DEFAULT_AVATAR;
 
   const [imgSrc, setImgSrc] = useState<string>(initialAvatarSrc);
 
@@ -43,7 +45,7 @@ export default function ProfileInfo({
         priority
         onError={handleError}
       />
-      <div>
+      <div className={css.avatarContent}>
         <h1 className={css.username}>{username}</h1>
         <p className={css.stats}>Статей: {locationsCount}</p>
       </div>

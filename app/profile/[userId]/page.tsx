@@ -26,7 +26,7 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
 
   const profileResponse = await fetch(
     `${API_URL}/api/users/${encodeURIComponent(userId)}`,
-    { cache: "no-store" }
+    { cache: "no-store" },
   );
 
   if (profileResponse.status === 404) {
@@ -47,22 +47,29 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
 
   if (cookieHeader) {
     try {
-      const currentUserResponse: Response = await fetch(`${API_URL}/api/users/me`, {
-        headers: {
-          Cookie: cookieHeader,
+      const currentUserResponse: Response = await fetch(
+        `${API_URL}/api/users/me`,
+        {
+          headers: {
+            Cookie: cookieHeader,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      });
+      );
 
       if (currentUserResponse.ok) {
-        const currentUserData: CurrentUserResponse = await currentUserResponse.json();
+        const currentUserData: CurrentUserResponse =
+          await currentUserResponse.json();
         const currentUser = currentUserData.data;
 
         isOwnProfile = currentUser.id === profileUser._id;
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        console.error("Помилка під час перевірки поточного користувача:", err.message);
+        console.error(
+          "Помилка під час перевірки поточного користувача:",
+          err.message,
+        );
       } else {
         console.error("Невідома помилка під час перевірки користувача");
       }
@@ -72,7 +79,7 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
   return (
     <main>
       <section className={css.pageHeader}>
-        <div className={css.container}>
+        <div className="container">
           <ProfileInfo
             avatar={profileUser.avatarUrl}
             username={profileUser.name}
@@ -81,11 +88,15 @@ const ProfilePage = async ({ params }: ProfilePageProps) => {
         </div>
       </section>
 
-      <div className={css.locationsContainer}>
-        {!isOwnProfile && <h2 className={css.locationsTitle}>Локації</h2>}
+      <section className={css.locationsSection}>
+        <div className="container">
+          <div className={css.locationsContent}>
+            {!isOwnProfile && <h2 className={css.locationsTitle}>Локації</h2>}
 
-        <ProfileClient userId={userId} isOwnProfile={isOwnProfile} />
-      </div>
+            <ProfileClient userId={userId} isOwnProfile={isOwnProfile} />
+          </div>
+        </div>
+      </section>
     </main>
   );
 };
